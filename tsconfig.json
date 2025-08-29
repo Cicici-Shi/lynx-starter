@@ -2,6 +2,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "@lynx-js/react",
+    "allowImportingTsExtensions": true,
 
     "module": "node18",
     "moduleResolution": "node16",

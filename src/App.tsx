@@ -5,7 +5,10 @@ import arrow from "./assets/arrow.png";
 import lynxLogo from "./assets/lynx-logo.png";
 import reactLynxLogo from "./assets/react-logo.png";
 
-export function App(props: { onRender?: () => void }) {
+export function App(props: {
+  onRender?: () => void;
+  onNavigateToReports?: () => void;
+}) {
   const [alterLogo, setAlterLogo] = useState(false);
 
   useEffect(() => {
@@ -18,10 +21,21 @@ export function App(props: { onRender?: () => void }) {
     setAlterLogo((prevAlterLogo) => !prevAlterLogo);
   }, []);
 
+  const goToReports = useCallback(() => {
+    props.onNavigateToReports?.();
+  }, [props.onNavigateToReports]);
+
   return (
     <view>
       <view className="Background" />
       <view className="App">
+        {/* 右上角报表按钮 */}
+        <view className="TopBar">
+          <text className="ReportsButton" bindtap={goToReports}>
+            📊
+          </text>
+        </view>
+
         <view className="Banner">
           <view className="Logo" bindtap={onTap}>
             {alterLogo ? (

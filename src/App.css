@@ -27,6 +27,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-top: 40px;
 }
 
 text {
@@ -116,4 +117,27 @@ text {
   font-size: 12px;
   margin: 5px;
   color: rgba(255, 255, 255, 0.65);
+}
+/* 顶部栏样式 */
+.TopBar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.ReportsButton {
+  font-size: 28px;
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ReportsButton:hover {
+  background-color: rgba(255, 255, 255, 1);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
