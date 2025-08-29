@@ -4,6 +4,7 @@ import {
   type AISearchResult,
   validateAISearchResult,
 } from "../utils/validation.ts";
+import { Icon } from "../components/Icon.tsx";
 import "./ReportsPage.css";
 
 // 扩展 Lynx 类型定义以支持 input 元素
@@ -39,18 +40,19 @@ function SmartSearchBox({
   const [isOpen, setIsOpen] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [savedInputValue, setSavedInputValue] = useState("");
 
   // 获取类型对应的图标
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "sales":
-        return "💰";
+        return "sales";
       case "analytics":
-        return "📊";
+        return "analytics";
       case "user":
-        return "👥";
+        return "user";
       default:
-        return "📄";
+        return "document";
     }
   };
 
@@ -89,7 +91,7 @@ function SmartSearchBox({
       return data.slice(0, 5).map((item) => ({
         id: item.id,
         label: item.title,
-        icon: getTypeIcon(item.type),
+        iconName: getTypeIcon(item.type),
         type: "report" as const,
         status: item.status,
         date: item.date,
@@ -108,7 +110,7 @@ function SmartSearchBox({
       .map((item) => ({
         id: item.id,
         label: item.title,
-        icon: getTypeIcon(item.type),
+        iconName: getTypeIcon(item.type),
         type: "report" as const,
         status: item.status,
         date: item.date,
@@ -122,12 +124,24 @@ function SmartSearchBox({
 
   const handleOptionSelect = async (optionId: string, optionLabel?: string) => {
     if (optionId === "ai") {
+      // 保存用户输入，然后开始思考状态
+      setSavedInputValue(inputValue);
       setIsThinking(true);
+      setIsOpen(false);
+
+      console.log("开始 AI 思考状态，isThinking:", true);
+
       try {
-        await onAISearch(inputValue);
+        // 确保至少显示 1 秒的思考状态
+        const [aiResult] = await Promise.all([
+          onAISearch(inputValue),
+          new Promise((resolve) => setTimeout(resolve, 1000)),
+        ]);
       } catch (error) {
         console.error("AI搜索失败:", error);
       } finally {
+        // 恢复用户输入
+        console.log("结束 AI 思考状态，isThinking:", false);
         setIsThinking(false);
       }
     } else {
@@ -135,8 +149,8 @@ function SmartSearchBox({
       const searchTerm = optionLabel || inputValue;
       setInputValue(searchTerm);
       onChange(searchTerm);
+      setIsOpen(false);
     }
-    setIsOpen(false);
   };
 
   const handleInputFocus = () => {
@@ -148,72 +162,86 @@ function SmartSearchBox({
     setIsOpen(true);
   };
 
+  const handleClickOutside = () => {
+    setIsOpen(false);
+  };
+
   return (
     <view className="smart-search-container">
       <view className="search-input-wrapper">
         <input
-          className="smart-search-input"
-          placeholder="搜索报表..."
-          value={inputValue}
-          bindinput={(e: { detail: { value: string } }) =>
-            handleInputChange(e.detail.value)
-          }
-          bindfocus={handleInputFocus}
+          className={`smart-search-input ${isThinking ? "disabled" : ""}`}
+          placeholder={isThinking ? "" : "搜索报表..."}
+          value={isThinking ? "Thinking..." : inputValue}
+          bindinput={(e: { detail: { value: string } }) => {
+            if (!isThinking) {
+              handleInputChange(e.detail.value);
+            }
+          }}
+          bindfocus={() => {
+            if (!isThinking) {
+              handleInputFocus();
+            }
+          }}
         />
 
         <view className="search-action">
           {isThinking ? (
-            <text className="thinking-icon">🤔</text>
+            <Icon name="thinking" size={20} className="thinking-icon" />
           ) : (
-            <text className="search-icon">🔍</text>
+            <Icon name="search" size={20} className="search-icon" />
           )}
         </view>
       </view>
 
       {isOpen && (
-        <view className="search-options-dropdown">
-          {/* 显示匹配的报表选项 */}
-          {matchingOptions.map((option) => (
+        <>
+          {/* 点击遮罩关闭搜索框 */}
+          <view className="search-overlay" bindtap={handleClickOutside}></view>
+          <view className="search-options-dropdown">
+            {/* 显示匹配的报表选项 */}
+            {matchingOptions.map((option) => (
+              <view
+                key={option.id}
+                className="search-option"
+                bindtap={() => handleOptionSelect(option.id, option.label)}
+              >
+                <view className="search-option-content">
+                  <Icon
+                    name={option.iconName}
+                    size={16}
+                    className="search-option-icon"
+                  />
+                  <view className="search-option-text">
+                    <text className="search-option-label">{option.label}</text>
+                    <text className="search-option-desc">
+                      {getTypeText(option.reportType)} •{" "}
+                      {getStatusText(option.status)} • {option.date}
+                    </text>
+                  </view>
+                </view>
+              </view>
+            ))}
+
+            {/* AI选项始终显示在最后 */}
             <view
-              key={option.id}
               className="search-option"
-              bindtap={() => handleOptionSelect(option.id, option.label)}
+              bindtap={() => handleOptionSelect("ai")}
             >
               <view className="search-option-content">
-                <text className="search-option-icon">{option.icon}</text>
+                <Icon name="ai" size={16} className="search-option-icon" />
                 <view className="search-option-text">
-                  <text className="search-option-label">{option.label}</text>
+                  <text className="search-option-label">Ask AI</text>
                   <text className="search-option-desc">
-                    {getTypeText(option.reportType)} •{" "}
-                    {getStatusText(option.status)} • {option.date}
+                    {inputValue.trim()
+                      ? `"${inputValue}"`
+                      : "使用AI进行智能搜索"}
                   </text>
                 </view>
               </view>
             </view>
-          ))}
-
-          {/* AI选项始终显示在最后 */}
-          <view
-            className="search-option"
-            bindtap={() => handleOptionSelect("ai")}
-          >
-            <view className="search-option-content">
-              <text className="search-option-icon">⭐</text>
-              <view className="search-option-text">
-                <text className="search-option-label">Ask AI</text>
-                <text className="search-option-desc">
-                  {inputValue.trim() ? `"${inputValue}"` : "使用AI进行智能搜索"}
-                </text>
-              </view>
-            </view>
           </view>
-        </view>
-      )}
-
-      {isThinking && (
-        <view className="thinking-overlay">
-          <text className="thinking-text">AI正在理解您的需求...</text>
-        </view>
+        </>
       )}
     </view>
   );
@@ -240,6 +268,10 @@ function Dropdown({
     setIsOpen(false);
   };
 
+  const handleClickOutside = () => {
+    setIsOpen(false);
+  };
+
   const selectedOption = options.find((opt) => opt.value === value);
 
   return (
@@ -253,27 +285,40 @@ function Dropdown({
             {selectedOption ? selectedOption.label : placeholder}
           </text>
         </view>
-        <text className="dropdown-arrow">{isOpen ? "▲" : "▼"}</text>
+        <Icon
+          name={isOpen ? "dropup" : "dropdown"}
+          size={16}
+          className="dropdown-arrow"
+        />
       </view>
 
       {isOpen && (
-        <view className="dropdown-menu">
-          {options.map((option) => (
-            <view
-              key={option.value}
-              className={`dropdown-item ${value === option.value ? "selected" : ""}`}
-              bindtap={() => handleSelect(option.value)}
-            >
-              <view className="dropdown-item-content">
-                {showStatusDots && option.statusClass && (
-                  <view className={`status-dot ${option.statusClass}`}></view>
+        <>
+          {/* 点击遮罩关闭下拉框 */}
+          <view
+            className="dropdown-overlay"
+            bindtap={handleClickOutside}
+          ></view>
+          <view className="dropdown-menu">
+            {options.map((option) => (
+              <view
+                key={option.value}
+                className={`dropdown-item ${value === option.value ? "selected" : ""}`}
+                bindtap={() => handleSelect(option.value)}
+              >
+                <view className="dropdown-item-content">
+                  {showStatusDots && option.statusClass && (
+                    <view className={`status-dot ${option.statusClass}`}></view>
+                  )}
+                  <text className="dropdown-item-text">{option.label}</text>
+                </view>
+                {value === option.value && (
+                  <text className="check-icon">✓</text>
                 )}
-                <text className="dropdown-item-text">{option.label}</text>
               </view>
-              {value === option.value && <text className="check-icon">✓</text>}
-            </view>
-          ))}
-        </view>
+            ))}
+          </view>
+        </>
       )}
     </view>
   );
@@ -358,6 +403,10 @@ function DatePicker({
     }
   };
 
+  const handleClickOutside = () => {
+    setIsOpen(false);
+  };
+
   const isDateInRange = (day: number) => {
     if (!startDate) return false;
     if (!endDate) return day === startDate;
@@ -378,57 +427,66 @@ function DatePicker({
   return (
     <view className="custom-date-picker">
       <view className="date-picker-trigger" bindtap={() => setIsOpen(!isOpen)}>
-        <text className="date-picker-icon">📅</text>
+        <Icon name="calendar" size={16} className="date-picker-icon" />
         <text className="date-picker-text">
           {value ? `${value}` : "Select Date Range"}
         </text>
       </view>
 
       {isOpen && (
-        <view className="date-picker-dropdown">
-          {/* 月份导航 */}
-          <view className="calendar-header">
-            <text className="nav-arrow">‹</text>
-            <text className="current-month">August 2025</text>
-            <text className="nav-arrow">›</text>
-          </view>
+        <>
+          {/* 点击遮罩关闭日期选择器 */}
+          <view
+            className="date-picker-overlay"
+            bindtap={handleClickOutside}
+          ></view>
+          <view className="date-picker-dropdown">
+            {/* 月份导航 */}
+            <view className="calendar-header">
+              <text className="nav-arrow">‹</text>
+              <text className="current-month">August 2025</text>
+              <text className="nav-arrow">›</text>
+            </view>
 
-          {/* 星期标题 */}
-          <view className="weekdays">
-            {weekDays.map((day) => (
-              <text key={day} className="weekday">
-                {day}
-              </text>
-            ))}
-          </view>
+            {/* 星期标题 */}
+            <view className="weekdays">
+              {weekDays.map((day) => (
+                <text key={day} className="weekday">
+                  {day}
+                </text>
+              ))}
+            </view>
 
-          {/* 日期网格 */}
-          <view className="calendar-grid">
-            {calendar.map((date, index) => (
-              <text
-                key={`${date.isCurrentMonth ? "current" : date.isNextMonth ? "next" : "prev"}-${date.day}-${index}`}
-                className={`calendar-day ${
-                  !date.isCurrentMonth ? "other-month" : ""
-                } ${
-                  date.isCurrentMonth && isDateInRange(date.day)
-                    ? "in-range"
-                    : ""
-                } ${
-                  date.isCurrentMonth && isDateRangeStart(date.day)
-                    ? "range-start"
-                    : ""
-                } ${
-                  date.isCurrentMonth && isDateRangeEnd(date.day)
-                    ? "range-end"
-                    : ""
-                }`}
-                bindtap={() => handleDateSelect(date.day, date.isCurrentMonth)}
-              >
-                {date.day}
-              </text>
-            ))}
+            {/* 日期网格 */}
+            <view className="calendar-grid">
+              {calendar.map((date, index) => (
+                <text
+                  key={`${date.isCurrentMonth ? "current" : date.isNextMonth ? "next" : "prev"}-${date.day}-${index}`}
+                  className={`calendar-day ${
+                    !date.isCurrentMonth ? "other-month" : ""
+                  } ${
+                    date.isCurrentMonth && isDateInRange(date.day)
+                      ? "in-range"
+                      : ""
+                  } ${
+                    date.isCurrentMonth && isDateRangeStart(date.day)
+                      ? "range-start"
+                      : ""
+                  } ${
+                    date.isCurrentMonth && isDateRangeEnd(date.day)
+                      ? "range-end"
+                      : ""
+                  }`}
+                  bindtap={() =>
+                    handleDateSelect(date.day, date.isCurrentMonth)
+                  }
+                >
+                  {date.day}
+                </text>
+              ))}
+            </view>
           </view>
-        </view>
+        </>
       )}
     </view>
   );
@@ -632,10 +690,10 @@ export function ReportsPage(props: { onBack?: () => void }) {
     <view className="reports-page">
       {/* 顶部导航栏 */}
       <view className="reports-header">
-        <text className="back-button" bindtap={props.onBack}>
-          ← 返回
-        </text>
-        <text className="reports-title">Lynx</text>
+        <view className="back-button" bindtap={props.onBack}>
+          <Icon name="back" size={16} className="back-icon" />
+          <text>返回</text>
+        </view>
       </view>
 
       {/* 内容区域 */}
