@@ -37,7 +37,9 @@
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 8px;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .back-button:hover {
@@ -51,26 +53,53 @@
   color: var(--rp-text);
 }
 
-/* 搜索框样式 */
-.search-container {
+/* 智能搜索框样式 */
+.smart-search-container {
+  position: relative;
   margin-bottom: 16px;
 }
 
-.search-input-container {
+.search-input-wrapper {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  padding: 12px 16px;
-  border: 1px solid var(--rp-border);
-  border-radius: 10px;
   background-color: var(--rp-panel);
-  gap: 8px;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 1px solid var(--rp-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
-.search-input-container:focus-within {
+.search-input-wrapper:focus-within {
   border-color: var(--rp-brand);
   box-shadow: 0 0 0 4px rgba(16, 163, 127, 0.12);
+}
+
+.smart-search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--rp-text);
+  background: transparent;
+}
+
+.smart-search-input::placeholder {
+  color: var(--rp-muted);
+}
+
+.search-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 48px;
+}
+
+.search-action:hover {
+  background-color: #f8fafc;
 }
 
 .search-icon {
@@ -78,10 +107,126 @@
   color: var(--rp-muted);
 }
 
-.search-placeholder {
+.thinking-icon {
   font-size: 16px;
-  color: var(--rp-muted);
+  animation: thinking 1.5s ease-in-out infinite;
+}
+
+@keyframes thinking {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+}
+
+/* 搜索选项下拉菜单 */
+.search-options-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background-color: var(--rp-panel);
+  border: 1px solid var(--rp-border);
+  border-radius: 12px;
+  box-shadow: var(--rp-shadow);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.search-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.search-option:last-child {
+  border-bottom: none;
+}
+
+.search-option:hover {
+  background-color: #f8fafc;
+}
+
+.search-option.selected {
+  background-color: #f0fdf4;
+}
+
+
+
+.search-option-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   flex: 1;
+}
+
+.search-option-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.search-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.search-option-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--rp-text);
+}
+
+.search-option-desc {
+  font-size: 14px;
+  color: var(--rp-muted);
+}
+
+.check-icon {
+  color: var(--rp-brand);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* AI 思考状态覆盖层 */
+.thinking-overlay {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  padding: 16px 20px;
+  background-color: var(--rp-panel);
+  border: 1px solid var(--rp-border);
+  border-radius: 12px;
+  box-shadow: var(--rp-shadow);
+  z-index: 1001;
+}
+
+.thinking-text {
+  font-size: 14px;
+  color: var(--rp-brand);
+  text-align: center;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 /* 筛选项样式 */
@@ -390,20 +535,20 @@
 }
 
 /* 状态语义色 - 状态点颜色 */
-.status-dot.status-success { 
-  background-color: #10b981 !important; 
+.status-dot.status-success {
+  background-color: #10b981 !important;
 }
 
-.status-dot.status-warning { 
-  background-color: #f59e0b !important; 
+.status-dot.status-warning {
+  background-color: #f59e0b !important;
 }
 
-.status-dot.status-danger { 
-  background-color: #ef4444 !important; 
+.status-dot.status-danger {
+  background-color: #ef4444 !important;
 }
 
-.status-dot.status-info { 
-  background-color: #3b82f6 !important; 
+.status-dot.status-info {
+  background-color: #3b82f6 !important;
 }
 
 .filter-button {
@@ -414,7 +559,10 @@
   background-color: var(--rp-panel);
   color: var(--rp-text-2);
   cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .filter-button.active {
@@ -526,10 +674,18 @@
 }
 
 /* 状态语义色 - 圆点颜色 */
-.status-success .status-dot { background-color: #10b981; }
-.status-warning .status-dot { background-color: #f59e0b; }
-.status-danger .status-dot  { background-color: #ef4444; }
-.status-info .status-dot    { background-color: #3b82f6; }
+.status-success .status-dot {
+  background-color: #10b981;
+}
+.status-warning .status-dot {
+  background-color: #f59e0b;
+}
+.status-danger .status-dot {
+  background-color: #ef4444;
+}
+.status-info .status-dot {
+  background-color: #3b82f6;
+}
 
 .status-text {
   font-size: 12px;
@@ -542,26 +698,26 @@
   .reports-page {
     padding: 16px;
   }
-  
+
   .filters-container {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .filter-group {
     min-width: auto;
   }
-  
+
   .table-header,
   .table-row {
     padding: 12px 0;
   }
-  
+
   .table-cell {
     padding: 0 12px;
     font-size: 13px;
   }
-  
+
   .header-cell {
     font-size: 11px;
   }
@@ -588,7 +744,7 @@
 
 .reports-content {
   flex: 1;
-  padding: 24px;
+  padding: 10px 24px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;

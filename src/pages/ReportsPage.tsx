@@ -1,5 +1,223 @@
 import { useState } from "@lynx-js/react";
+import { aiSearchService } from "../services/aiService.ts";
+import {
+  type AISearchResult,
+  validateAISearchResult,
+} from "../utils/validation.ts";
 import "./ReportsPage.css";
+
+// 扩展 Lynx 类型定义以支持 input 元素
+declare module "@lynx-js/react" {
+  namespace JSX {
+    interface IntrinsicElements {
+      input: {
+        className?: string;
+        placeholder?: string;
+        value?: string;
+        bindinput?: (e: { detail: { value: string } }) => void;
+        bindkeypress?: (e: KeyboardEvent) => void;
+        bindfocus?: () => void;
+      };
+    }
+  }
+}
+
+// AI搜索结果类型定义（使用自定义验证替代zod）
+// AISearchResult type is now imported from validation utils
+
+// 智能搜索框组件
+function SmartSearchBox({
+  onChange,
+  onAISearch,
+  data,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onAISearch: (query: string) => Promise<void>;
+  data: ReportItem[];
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
+  // 获取类型对应的图标
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case "sales":
+        return "💰";
+      case "analytics":
+        return "📊";
+      case "user":
+        return "👥";
+      default:
+        return "📄";
+    }
+  };
+
+  // 获取状态文本
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "已完成";
+      case "pending":
+        return "进行中";
+      case "failed":
+        return "失败";
+      default:
+        return status;
+    }
+  };
+
+  // 获取类型文本
+  const getTypeText = (type: string) => {
+    switch (type) {
+      case "sales":
+        return "销售";
+      case "analytics":
+        return "分析";
+      case "user":
+        return "用户";
+      default:
+        return type;
+    }
+  };
+
+  // 根据输入内容从真实数据中筛选匹配的报表
+  const getMatchingOptions = () => {
+    if (!inputValue.trim()) {
+      // 如果没有输入，显示最近的几个报表作为建议
+      return data.slice(0, 5).map((item) => ({
+        id: item.id,
+        label: item.title,
+        icon: getTypeIcon(item.type),
+        type: "report" as const,
+        status: item.status,
+        date: item.date,
+        reportType: item.type,
+      }));
+    }
+
+    const query = inputValue.toLowerCase();
+    const matchingReports = data
+      .filter(
+        (item) =>
+          item.title.toLowerCase().includes(query) ||
+          getTypeText(item.type).toLowerCase().includes(query) ||
+          getStatusText(item.status).toLowerCase().includes(query),
+      )
+      .map((item) => ({
+        id: item.id,
+        label: item.title,
+        icon: getTypeIcon(item.type),
+        type: "report" as const,
+        status: item.status,
+        date: item.date,
+        reportType: item.type,
+      }));
+
+    return matchingReports;
+  };
+
+  const matchingOptions = getMatchingOptions();
+
+  const handleOptionSelect = async (optionId: string, optionLabel?: string) => {
+    if (optionId === "ai") {
+      setIsThinking(true);
+      try {
+        await onAISearch(inputValue);
+      } catch (error) {
+        console.error("AI搜索失败:", error);
+      } finally {
+        setIsThinking(false);
+      }
+    } else {
+      // 对于报表选项，使用报表标题进行搜索
+      const searchTerm = optionLabel || inputValue;
+      setInputValue(searchTerm);
+      onChange(searchTerm);
+    }
+    setIsOpen(false);
+  };
+
+  const handleInputFocus = () => {
+    setIsOpen(true);
+  };
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    setIsOpen(true);
+  };
+
+  return (
+    <view className="smart-search-container">
+      <view className="search-input-wrapper">
+        <input
+          className="smart-search-input"
+          placeholder="搜索报表..."
+          value={inputValue}
+          bindinput={(e: { detail: { value: string } }) =>
+            handleInputChange(e.detail.value)
+          }
+          bindfocus={handleInputFocus}
+        />
+
+        <view className="search-action">
+          {isThinking ? (
+            <text className="thinking-icon">🤔</text>
+          ) : (
+            <text className="search-icon">🔍</text>
+          )}
+        </view>
+      </view>
+
+      {isOpen && (
+        <view className="search-options-dropdown">
+          {/* 显示匹配的报表选项 */}
+          {matchingOptions.map((option) => (
+            <view
+              key={option.id}
+              className="search-option"
+              bindtap={() => handleOptionSelect(option.id, option.label)}
+            >
+              <view className="search-option-content">
+                <text className="search-option-icon">{option.icon}</text>
+                <view className="search-option-text">
+                  <text className="search-option-label">{option.label}</text>
+                  <text className="search-option-desc">
+                    {getTypeText(option.reportType)} •{" "}
+                    {getStatusText(option.status)} • {option.date}
+                  </text>
+                </view>
+              </view>
+            </view>
+          ))}
+
+          {/* AI选项始终显示在最后 */}
+          <view
+            className="search-option"
+            bindtap={() => handleOptionSelect("ai")}
+          >
+            <view className="search-option-content">
+              <text className="search-option-icon">⭐</text>
+              <view className="search-option-text">
+                <text className="search-option-label">Ask AI</text>
+                <text className="search-option-desc">
+                  {inputValue.trim() ? `"${inputValue}"` : "使用AI进行智能搜索"}
+                </text>
+              </view>
+            </view>
+          </view>
+        </view>
+      )}
+
+      {isThinking && (
+        <view className="thinking-overlay">
+          <text className="thinking-text">AI正在理解您的需求...</text>
+        </view>
+      )}
+    </view>
+  );
+}
 
 // 通用下拉选择组件
 function Dropdown({
@@ -72,7 +290,6 @@ function DatePicker({
   const [isOpen, setIsOpen] = useState(false);
   const [startDate, setStartDate] = useState<number | null>(null);
   const [endDate, setEndDate] = useState<number | null>(null);
-  const [isSelectingRange, setIsSelectingRange] = useState(false);
 
   // 生成2025年8月的日历数据
   const generateCalendar = () => {
@@ -126,14 +343,12 @@ function DatePicker({
       // 开始新的选择
       setStartDate(day);
       setEndDate(null);
-      setIsSelectingRange(true);
     } else if (startDate && !endDate) {
       // 选择结束日期
       if (day >= startDate) {
         setEndDate(day);
         const rangeStr = `2025-08-${startDate.toString().padStart(2, "0")} ~ 2025-08-${day.toString().padStart(2, "0")}`;
         onChange(rangeStr);
-        setIsSelectingRange(false);
         setIsOpen(false);
       } else {
         // 如果选择的日期小于开始日期，重新开始
@@ -180,8 +395,8 @@ function DatePicker({
 
           {/* 星期标题 */}
           <view className="weekdays">
-            {weekDays.map((day, index) => (
-              <text key={index} className="weekday">
+            {weekDays.map((day) => (
+              <text key={day} className="weekday">
                 {day}
               </text>
             ))}
@@ -191,7 +406,7 @@ function DatePicker({
           <view className="calendar-grid">
             {calendar.map((date, index) => (
               <text
-                key={index}
+                key={`${date.isCurrentMonth ? "current" : date.isNextMonth ? "next" : "prev"}-${date.day}-${index}`}
                 className={`calendar-day ${
                   !date.isCurrentMonth ? "other-month" : ""
                 } ${
@@ -320,6 +535,38 @@ export function ReportsPage(props: { onBack?: () => void }) {
   const [statusFilter, setStatusFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
 
+  // AI 搜索处理函数
+  const handleAISearch = async (query: string): Promise<void> => {
+    try {
+      console.log("AI搜索查询:", query);
+
+      // 调用 AI 服务
+      const aiResult = await aiSearchService.searchToFilters({ query });
+
+      // 验证 AI 返回的结果
+      const validatedResult: AISearchResult = validateAISearchResult(aiResult);
+
+      // 将 AI 结果应用到现有筛选器
+      if (validatedResult.searchTerm) {
+        setSearchTerm(validatedResult.searchTerm);
+      }
+      if (validatedResult.status) {
+        setStatusFilter(validatedResult.status);
+      }
+      if (validatedResult.type) {
+        setTypeFilter(validatedResult.type);
+      }
+      if (validatedResult.dateRange) {
+        setDateFilter(
+          `${validatedResult.dateRange.start} ~ ${validatedResult.dateRange.end}`,
+        );
+      }
+    } catch (error) {
+      console.error("AI搜索失败:", error);
+      throw error;
+    }
+  };
+
   const filteredData = mockData.filter((item) => {
     const matchesSearch = item.title
       .toLowerCase()
@@ -327,8 +574,8 @@ export function ReportsPage(props: { onBack?: () => void }) {
 
     // 处理日期范围筛选
     let matchesDate = true;
-    if (dateFilter && dateFilter.includes(" to ")) {
-      const [startDateStr, endDateStr] = dateFilter.split(" to ");
+    if (dateFilter?.includes(" ~ ")) {
+      const [startDateStr, endDateStr] = dateFilter.split(" ~ ");
       const itemDate = new Date(item.date);
       const startDate = new Date(startDateStr);
       const endDate = new Date(endDateStr);
@@ -393,13 +640,13 @@ export function ReportsPage(props: { onBack?: () => void }) {
 
       {/* 内容区域 */}
       <view className="reports-content">
-        {/* 搜索框 */}
-        <view className="search-container">
-          <view className="search-input-container">
-            <text className="search-icon">🔍</text>
-            <text className="search-placeholder">搜索报表...</text>
-          </view>
-        </view>
+        {/* 智能搜索框 */}
+        <SmartSearchBox
+          value={searchTerm}
+          onChange={setSearchTerm}
+          onAISearch={handleAISearch}
+          data={mockData}
+        />
 
         {/* 筛选项 */}
         <view className="filters-container">

@@ -3,6 +3,9 @@
 *.local
 *.log*
 
+# Local config (contains API keys)
+src/config/local.ts
+
 # Dist
 node_modules
 dist/

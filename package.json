@@ -11,7 +11,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@lynx-js/react": "^0.112.4"
+    "@ai-sdk/openai": "^2.0.23",
+    "@lynx-js/react": "^0.112.4",
+    "ai": "^5.0.28"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",

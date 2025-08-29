@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "@lynx-js/react";
+import { useCallback, useEffect, useState } from '@lynx-js/react';
 
-import "./App.css";
-import arrow from "./assets/arrow.png";
-import lynxLogo from "./assets/lynx-logo.png";
-import reactLynxLogo from "./assets/react-logo.png";
+import './App.css';
+import arrow from './assets/arrow.png';
+import lynxLogo from './assets/lynx-logo.png';
+import reactLynxLogo from './assets/react-logo.png';
 
 export function App(props: {
   onRender?: () => void;
@@ -12,12 +12,12 @@ export function App(props: {
   const [alterLogo, setAlterLogo] = useState(false);
 
   useEffect(() => {
-    console.info("Hello, ReactLynx");
+    console.info('Hello, ReactLynx');
   }, []);
   props.onRender?.();
 
   const onTap = useCallback(() => {
-    "background only";
+    'background only';
     setAlterLogo((prevAlterLogo) => !prevAlterLogo);
   }, []);
 
@@ -54,11 +54,11 @@ export function App(props: {
             Edit
             <text
               style={{
-                fontStyle: "italic",
-                color: "rgba(255, 255, 255, 0.85)",
+                fontStyle: 'italic',
+                color: 'rgba(255, 255, 255, 0.85)',
               }}
             >
-              {" src/App.tsx "}
+              {' src/App.tsx '}
             </text>
             to see updates!
           </text>
