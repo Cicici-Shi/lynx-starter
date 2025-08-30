@@ -1,9 +1,8 @@
 import { useState } from "@lynx-js/react";
-import { aiSearchService } from "../services/aiService.ts";
 import {
-  type AISearchResult,
-  validateAISearchResult,
-} from "../utils/validation.ts";
+  aiSearchService,
+  type AISearchResponse,
+} from "../services/aiService.ts";
 import { Icon } from "../components/Icon.tsx";
 import "./ReportsPage.css";
 
@@ -105,7 +104,7 @@ function SmartSearchBox({
         (item) =>
           item.title.toLowerCase().includes(query) ||
           getTypeText(item.type).toLowerCase().includes(query) ||
-          getStatusText(item.status).toLowerCase().includes(query),
+          getStatusText(item.status).toLowerCase().includes(query)
       )
       .map((item) => ({
         id: item.id,
@@ -598,26 +597,32 @@ export function ReportsPage(props: { onBack?: () => void }) {
     try {
       console.log("AI搜索查询:", query);
 
-      // 调用 AI 服务
-      const aiResult = await aiSearchService.searchToFilters({ query });
-
-      // 验证 AI 返回的结果
-      const validatedResult: AISearchResult = validateAISearchResult(aiResult);
+      // 调用 AI 服务（验证已在服务内部处理）
+      const aiResult: AISearchResponse = await aiSearchService.searchToFilters({
+        query,
+      });
 
       // 将 AI 结果应用到现有筛选器
-      if (validatedResult.searchTerm) {
-        setSearchTerm(validatedResult.searchTerm);
-      }
-      if (validatedResult.status) {
-        setStatusFilter(validatedResult.status);
-      }
-      if (validatedResult.type) {
-        setTypeFilter(validatedResult.type);
-      }
-      if (validatedResult.dateRange) {
+      // 1) searchTerm：若提供则设置，否则清空
+      setSearchTerm(aiResult.searchTerm ?? "");
+
+      // 2) status：若提供则设置，否则清空
+      setStatusFilter(aiResult.status ?? "");
+
+      // 3) type：若提供则设置，否则清空
+      setTypeFilter(aiResult.type ?? "");
+
+      // 4) dateRange：若提供则设置，否则清空
+      if (
+        aiResult.dateRange &&
+        aiResult.dateRange.start &&
+        aiResult.dateRange.end
+      ) {
         setDateFilter(
-          `${validatedResult.dateRange.start} ~ ${validatedResult.dateRange.end}`,
+          `${aiResult.dateRange.start} ~ ${aiResult.dateRange.end}`
         );
+      } else {
+        setDateFilter("");
       }
     } catch (error) {
       console.error("AI搜索失败:", error);
@@ -625,7 +630,7 @@ export function ReportsPage(props: { onBack?: () => void }) {
     }
   };
 
-  const filteredData = mockData.filter((item) => {
+  const rawFiltered = mockData.filter((item) => {
     const matchesSearch = item.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());

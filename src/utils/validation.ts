@@ -2,13 +2,13 @@
 // Compatible with Lynx runtime environment (no BigInt dependency)
 
 export interface AISearchResult {
-  searchTerm?: string;
+  searchTerm?: string | null;
   dateRange?: {
     start: string;
     end: string;
-  };
-  status?: 'completed' | 'pending' | 'failed';
-  type?: 'sales' | 'analytics' | 'user';
+  } | null;
+  status?: 'completed' | 'pending' | 'failed' | null;
+  type?: 'sales' | 'analytics' | 'user' | null;
 }
 
 // Validation functions
@@ -18,8 +18,8 @@ export function isValidString(value: unknown): value is string {
 
 export function isValidOptionalString(
   value: unknown,
-): value is string | undefined {
-  return value === undefined || typeof value === 'string';
+): value is string | undefined | null {
+  return value === undefined || value === null || typeof value === 'string';
 }
 
 export function isValidDateRange(
@@ -32,8 +32,8 @@ export function isValidDateRange(
 
 export function isValidOptionalDateRange(
   value: unknown,
-): value is { start: string; end: string } | undefined {
-  return value === undefined || isValidDateRange(value);
+): value is { start: string; end: string } | undefined | null {
+  return value === undefined || value === null || isValidDateRange(value);
 }
 
 export function isValidStatus(
@@ -44,8 +44,8 @@ export function isValidStatus(
 
 export function isValidOptionalStatus(
   value: unknown,
-): value is 'completed' | 'pending' | 'failed' | undefined {
-  return value === undefined || isValidStatus(value);
+): value is 'completed' | 'pending' | 'failed' | undefined | null {
+  return value === undefined || value === null || isValidStatus(value);
 }
 
 export function isValidType(
@@ -56,8 +56,20 @@ export function isValidType(
 
 export function isValidOptionalType(
   value: unknown,
-): value is 'sales' | 'analytics' | 'user' | undefined {
-  return value === undefined || isValidType(value);
+): value is 'sales' | 'analytics' | 'user' | undefined | null {
+  return value === undefined || value === null || isValidType(value);
+}
+
+// Simple helper to handle searchTerms array -> searchTerm string
+function normalizeSearchTerm(searchTerm: unknown, searchTerms: unknown): string | undefined {
+  if (typeof searchTerm === 'string') return searchTerm;
+  if (Array.isArray(searchTerms)) {
+    const parts = (searchTerms as unknown[]).filter((x) => typeof x === 'string') as string[];
+    const joined = parts.join(' ').trim();
+    return joined.length > 0 ? joined : undefined;
+  }
+  if (typeof searchTerms === 'string') return searchTerms;
+  return undefined;
 }
 
 // Main validation function for AI search results
@@ -69,12 +81,13 @@ export function validateAISearchResult(data: unknown): AISearchResult {
   const obj = data as Record<string, unknown>;
   const result: AISearchResult = {};
 
-  // Validate searchTerm
-  if (obj.searchTerm !== undefined) {
-    if (!isValidOptionalString(obj.searchTerm)) {
-      throw new Error('Invalid searchTerm: must be a string or undefined');
+  // Handle searchTerm (support searchTerms as array/string for backward compatibility)
+  const normalizedSearchTerm = normalizeSearchTerm(obj.searchTerm, (obj as any).searchTerms);
+  if (normalizedSearchTerm !== undefined && normalizedSearchTerm !== null) {
+    if (!isValidOptionalString(normalizedSearchTerm)) {
+      throw new Error('Invalid searchTerm: must be a string, null, or undefined');
     }
-    result.searchTerm = obj.searchTerm;
+    result.searchTerm = normalizedSearchTerm;
   }
 
   // Validate dateRange
@@ -87,7 +100,7 @@ export function validateAISearchResult(data: unknown): AISearchResult {
     result.dateRange = obj.dateRange;
   }
 
-  // Validate status
+  // Validate status (let AI handle normalization)
   if (obj.status !== undefined) {
     if (!isValidOptionalStatus(obj.status)) {
       throw new Error(
@@ -97,7 +110,7 @@ export function validateAISearchResult(data: unknown): AISearchResult {
     result.status = obj.status;
   }
 
-  // Validate type
+  // Validate type (let AI handle normalization)
   if (obj.type !== undefined) {
     if (!isValidOptionalType(obj.type)) {
       throw new Error(
