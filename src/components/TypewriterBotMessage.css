@@ -1,0 +1,133 @@
+/* Copyright 2024 The Lynx Authors. All rights reserved.
+ * Licensed under the Apache License Version 2.0 that can be found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/* ===== 打字机机器人消息容器 ===== */
+.typewriter-bot-message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.typewriter-bot-message .message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  flex: 1;
+}
+
+.typewriter-bot-message-bubble {
+  background: transparent;
+  color: #0a0a0a;
+  padding: 16px 0;
+  border: none;
+  box-shadow: none;
+  word-break: break-word;
+  white-space: pre-wrap;
+  width: 100%;
+}
+
+/* ===== 打字机内容区域 ===== */
+.typewriter-content {
+  display: flex;
+  align-items: flex-start;
+  min-height: 20px;
+}
+
+.typewriter-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #1f2937;
+  white-space: pre-wrap;
+  word-break: break-word;
+  flex: 1;
+  letter-spacing: 0.025em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 特殊字符样式 */
+.typewriter-text:global {
+  /* 这些样式会应用到文本内容中 */
+}
+
+/* ===== 打字机光标 ===== */
+.typewriter-cursor {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #3b82f6;
+  font-weight: 600;
+  margin-left: 1px;
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* ===== 消息元数据 ===== */
+.message-metadata {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rp-border, #e5e7eb);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.confidence-text,
+.sources-text {
+  font-size: 11px;
+  color: var(--rp-text-secondary, #64748b);
+}
+
+.bot-message-time {
+  font-size: 11px;
+  color: var(--rp-text-secondary, #64748b);
+  margin-top: 4px;
+  margin-left: 4px;
+}
+
+/* ===== 动画效果 ===== */
+.typewriter-bot-message {
+  animation: message-appear 0.3s ease-out;
+}
+
+@keyframes message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 768px) {
+  .typewriter-bot-message .message-content-wrapper {
+    width: 100%;
+  }
+  
+  .typewriter-bot-message-bubble {
+    padding: 12px 0;
+  }
+  
+  .typewriter-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .typewriter-cursor {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}

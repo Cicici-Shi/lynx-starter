@@ -1,13 +1,13 @@
 /* ReportsPage 亮色高保真主题 */
 :root {
-  --rp-bg: #f9fafb;
-  --rp-panel: #ffffff;
+  --rp-bg: #f8f7f6;
+  --rp-panel: #fcfcfc;
   --rp-border: #e5e7eb;
   --rp-muted: #9ca3af;
   --rp-text: #0f172a;
   --rp-text-2: #475569;
-  --rp-brand: #10a37f;
-  --rp-brand-600: #0e8067;
+  --rp-brand: #3b82f6;
+  --rp-brand-600: #2563eb;
   --rp-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
@@ -79,10 +79,27 @@
   transition: all 0.2s ease;
 }
 
-.search-input-wrapper:focus-within {
-  border-color: var(--rp-brand);
-  box-shadow: 0 0 0 4px rgba(16, 163, 127, 0.12);
+.search-input-wrapper.thinking {
+  background: linear-gradient(90deg, #e0e7ff 0%, #dbeafe 25%, #d1fae5 50%, #a7f3d0 75%, #86efac 100%);
+  background-size: 200% 100%;
+  animation: thinking-gradient 3s ease-in-out infinite;
+  border-color: #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
 }
+
+@keyframes thinking-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* focus-within not supported in Lynx - removed */
 
 .smart-search-input {
   flex: 1;
@@ -172,8 +189,6 @@
 .search-option.selected {
   background-color: #f0fdf4;
 }
-
-
 
 .search-option-content {
   display: flex;
@@ -316,9 +331,7 @@
   box-shadow: 0 0 0 4px rgba(16, 163, 127, 0.12);
 }
 
-.date-picker-main:hover {
-  /* 主要区域的悬停效果由父元素处理 */
-}
+/* 主要区域的悬停效果由父元素处理 */
 
 .date-picker-icon {
   color: var(--rp-muted);
@@ -657,7 +670,7 @@
 }
 
 .table-content {
-  min-width: 600px;
+  min-width: 1100px;
 }
 
 .table-header {
@@ -667,7 +680,7 @@
   border-bottom: 1px solid var(--rp-border);
   padding: 16px 0;
   flex-shrink: 0;
-  min-width: 600px;
+  min-width: 1100px;
 }
 
 .table-body {
@@ -680,7 +693,7 @@
   border-bottom: 1px solid #f3f4f6;
   padding: 16px 0;
   transition: background-color 0.2s ease;
-  min-width: 600px;
+  min-width: 1100px;
   flex-shrink: 0;
 }
 
@@ -704,6 +717,10 @@
   color: var(--rp-text-2);
   display: flex;
   align-items: center;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .header-cell {
@@ -782,24 +799,7 @@
   }
 }
 
-/* 滚动条样式 */
-.table-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.table-body::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
-}
-
-.table-body::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.table-body::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
+/* webkit-scrollbar not supported in Lynx - removed */
 
 .reports-content {
   flex: 1;
@@ -807,4 +807,389 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-width: 100%;
+}
+
+/* 宽屏适配 - 1890px 及以上 */
+@media (min-width: 1890px) {
+  .reports-page {
+    align-items: center;
+  }
+
+  .reports-content {
+    padding: 10px 48px 48px 48px;
+    gap: 32px;
+    max-width: 1800px;
+    width: 100%;
+  }
+
+  .smart-search-container {
+    margin-bottom: 24px;
+  }
+
+  .search-input-wrapper {
+    border-radius: 16px;
+  }
+
+  .smart-search-input {
+    padding: 16px 20px;
+    font-size: 18px;
+  }
+
+  .search-action {
+    padding: 16px 20px;
+    min-width: 56px;
+  }
+
+  /* 筛选项宽屏布局 */
+  .filters-container {
+    flex-direction: row;
+    gap: 24px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .filter-group {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+  }
+
+  /* 日期选择器宽屏优化 */
+  .custom-date-picker {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .date-picker-trigger {
+    height: 48px;
+    padding: 12px 16px;
+  }
+
+  .date-picker-text {
+    font-size: 16px;
+  }
+
+  /* 下拉选择器宽屏优化 */
+  .custom-dropdown {
+    min-width: 200px;
+  }
+
+  .dropdown-trigger {
+    height: 48px;
+    padding: 12px 16px;
+  }
+
+  .dropdown-text {
+    font-size: 16px;
+  }
+
+  /* 表格宽屏优化 */
+  .table-container {
+    height: 600px;
+    border-radius: 16px;
+    margin: 0 auto;
+  }
+
+  .table-content {
+    min-width: 1300px;
+  }
+
+  .table-header {
+    min-width: 1300px;
+    padding: 20px 0;
+  }
+
+  .table-row {
+    min-width: 1300px;
+    padding: 20px 0;
+  }
+
+  .table-cell {
+    min-width: 150px;
+    padding: 0 20px;
+    font-size: 16px;
+  }
+
+  /* 宽屏表格列宽度优化 */
+  .table-cell:nth-child(1) { /* Date */
+    flex: 0 0 120px;
+  }
+  .table-cell:nth-child(2) { /* Time */
+    flex: 0 0 100px;
+  }
+  .table-cell:nth-child(3) { /* Duration */
+    flex: 0 0 120px;
+  }
+  .table-cell:nth-child(4) { /* Peak Viewers */
+    flex: 0 0 130px;
+  }
+  .table-cell:nth-child(5) { /* Avg Viewers */
+    flex: 0 0 130px;
+  }
+  .table-cell:nth-child(6) { /* Total Viewers */
+    flex: 0 0 130px;
+  }
+  .table-cell:nth-child(7) { /* Comments */
+    flex: 0 0 120px;
+  }
+  .table-cell:nth-child(8) { /* Likes */
+    flex: 0 0 120px;
+  }
+  .table-cell:nth-child(9) { /* Engagement Rate */
+    flex: 0 0 140px;
+  }
+  .table-cell:nth-child(10) { /* Retention Rate */
+    flex: 0 0 140px;
+  }
+  .table-cell:nth-child(11) { /* Chat Activity */
+    flex: 0 0 130px;
+  }
+  .table-cell:nth-child(12) { /* Weekend */
+    flex: 0 0 100px;
+  }
+  .table-cell:nth-child(13) { /* Followers */
+    flex: 0 0 130px;
+  }
+
+  .header-cell {
+    font-size: 14px;
+  }
+
+  /* 搜索选项下拉菜单宽屏优化 */
+  .search-options-dropdown {
+    border-radius: 16px;
+    margin-top: 12px;
+  }
+
+  .search-option {
+    padding: 16px 20px;
+  }
+
+  .search-option-label {
+    font-size: 18px;
+  }
+
+  .search-option-desc {
+    font-size: 16px;
+  }
+
+  /* 下拉菜单宽屏优化 */
+  .dropdown-menu {
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+
+  .dropdown-item {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+
+  /* 日期选择器下拉菜单宽屏优化 */
+  .date-picker-dropdown {
+    border-radius: 16px;
+    margin-top: 12px;
+  }
+
+  .calendar-header {
+    padding: 20px 24px;
+  }
+
+  .current-month {
+    font-size: 20px;
+  }
+
+  .weekdays {
+    padding: 0 24px;
+  }
+
+  .weekday {
+    font-size: 16px;
+    padding: 16px 0;
+  }
+
+  .calendar-grid {
+    padding: 0 24px 24px;
+  }
+
+  .calendar-day {
+    font-size: 18px;
+    padding: 16px 0;
+    min-height: 48px;
+  }
+}
+
+/* 超宽屏适配 - 2560px 及以上 */
+@media (min-width: 2560px) {
+  .reports-content {
+    padding: 10px 64px 64px 64px;
+    gap: 40px;
+    max-width: 2400px;
+  }
+
+  .filters-container {
+    gap: 32px;
+  }
+
+  .filter-group {
+    min-width: 250px;
+    max-width: 350px;
+  }
+
+  .table-container {
+    height: 700px;
+  }
+
+  .table-content {
+    min-width: 1500px;
+  }
+
+  .table-header {
+    min-width: 1500px;
+    padding: 24px 0;
+  }
+
+  .table-row {
+    min-width: 1500px;
+    padding: 24px 0;
+  }
+
+  .table-cell {
+    min-width: 180px;
+    padding: 0 24px;
+    font-size: 18px;
+  }
+
+  /* 超宽屏表格列宽度优化 */
+  .table-cell:nth-child(1) { /* Date */
+    flex: 0 0 140px;
+  }
+  .table-cell:nth-child(2) { /* Time */
+    flex: 0 0 120px;
+  }
+  .table-cell:nth-child(3) { /* Duration */
+    flex: 0 0 140px;
+  }
+  .table-cell:nth-child(4) { /* Peak Viewers */
+    flex: 0 0 150px;
+  }
+  .table-cell:nth-child(5) { /* Avg Viewers */
+    flex: 0 0 150px;
+  }
+  .table-cell:nth-child(6) { /* Total Viewers */
+    flex: 0 0 150px;
+  }
+  .table-cell:nth-child(7) { /* Comments */
+    flex: 0 0 140px;
+  }
+  .table-cell:nth-child(8) { /* Likes */
+    flex: 0 0 140px;
+  }
+  .table-cell:nth-child(9) { /* Engagement Rate */
+    flex: 0 0 160px;
+  }
+  .table-cell:nth-child(10) { /* Retention Rate */
+    flex: 0 0 160px;
+  }
+  .table-cell:nth-child(11) { /* Chat Activity */
+    flex: 0 0 150px;
+  }
+  .table-cell:nth-child(12) { /* Weekend */
+    flex: 0 0 120px;
+  }
+  .table-cell:nth-child(13) { /* Followers */
+    flex: 0 0 150px;
+  }
+
+  .header-cell {
+    font-size: 16px;
+  }
+}
+
+/* 超大宽屏适配 - 3840px 及以上 (4K) */
+@media (min-width: 3840px) {
+  .reports-content {
+    padding: 10px 80px 80px 80px;
+    gap: 48px;
+    max-width: 3600px;
+  }
+
+  .filters-container {
+    gap: 40px;
+  }
+
+  .filter-group {
+    min-width: 300px;
+    max-width: 400px;
+  }
+
+  .table-container {
+    height: 800px;
+  }
+
+  .table-content {
+    min-width: 1900px;
+  }
+
+  .table-header {
+    min-width: 1900px;
+    padding: 28px 0;
+  }
+
+  .table-row {
+    min-width: 1900px;
+    padding: 28px 0;
+  }
+
+  .table-cell {
+    min-width: 220px;
+    padding: 0 28px;
+    font-size: 20px;
+  }
+
+  /* 4K屏幕表格列宽度优化 */
+  .table-cell:nth-child(1) { /* Date */
+    flex: 0 0 180px;
+  }
+  .table-cell:nth-child(2) { /* Time */
+    flex: 0 0 160px;
+  }
+  .table-cell:nth-child(3) { /* Duration */
+    flex: 0 0 180px;
+  }
+  .table-cell:nth-child(4) { /* Peak Viewers */
+    flex: 0 0 190px;
+  }
+  .table-cell:nth-child(5) { /* Avg Viewers */
+    flex: 0 0 190px;
+  }
+  .table-cell:nth-child(6) { /* Total Viewers */
+    flex: 0 0 190px;
+  }
+  .table-cell:nth-child(7) { /* Comments */
+    flex: 0 0 180px;
+  }
+  .table-cell:nth-child(8) { /* Likes */
+    flex: 0 0 180px;
+  }
+  .table-cell:nth-child(9) { /* Engagement Rate */
+    flex: 0 0 200px;
+  }
+  .table-cell:nth-child(10) { /* Retention Rate */
+    flex: 0 0 200px;
+  }
+  .table-cell:nth-child(11) { /* Chat Activity */
+    flex: 0 0 190px;
+  }
+  .table-cell:nth-child(12) { /* Weekend */
+    flex: 0 0 160px;
+  }
+  .table-cell:nth-child(13) { /* Followers */
+    flex: 0 0 190px;
+  }
+
+  .header-cell {
+    font-size: 18px;
+  }
 }

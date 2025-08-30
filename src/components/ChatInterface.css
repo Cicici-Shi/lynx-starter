@@ -1,0 +1,372 @@
+/* Copyright 2024 The Lynx Authors. All rights reserved.
+ * Licensed under the Apache License Version 2.0 that can be found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/* ===== 聊天界面主容器 ===== */
+.chat-interface {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--rp-bg, #f9fafb);
+}
+
+/* ===== 消息滚动区域 ===== */
+.chat-messages-scroll {
+  flex: 1;
+  min-height: 300px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* ===== 消息列表 ===== */
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100%;
+}
+
+.message-wrapper {
+  width: 100%;
+}
+
+/* ===== 用户消息样式 ===== */
+.user-message {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.user-message .message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: 80%;
+}
+
+.user-message-bubble {
+  background: #fcfcfc;
+  color: #1d1c1b;
+  padding: 12px 16px;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.user-message-content {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1d1c1b;
+}
+
+.user-message-time {
+  font-size: 11px;
+  color: var(--rp-text-secondary, #64748b);
+  margin-top: 4px;
+  margin-right: 4px;
+}
+
+/* ===== 机器人消息样式 ===== */
+.bot-message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+/* bot-avatar styles removed as per requirements */
+
+.bot-message .message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 90%;
+  flex: 1;
+}
+
+/* 为 livestream-selection 消息提供更宽的显示空间 */
+.bot-message .message-content-wrapper:has(.livestream-selection) {
+  max-width: 95%;
+}
+
+/* Lynx 不支持 :has() 伪类，使用特定类名替代 */
+.bot-message .message-content-wrapper.livestream-selection-container {
+  max-width: 98%;
+}
+
+.bot-message-bubble {
+  background: var(--rp-panel, #fcfcfc);
+  color: #0a0a0a;
+  padding: 12px 16px;
+  border-radius: 18px 18px 18px 4px;
+  border: 1px solid var(--rp-border, #e5e7eb);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  word-break: break-word;
+  white-space: pre-wrap;
+  width: 100%;
+}
+
+/* 为包含 livestream-selection 的消息泡泡减少内边距 */
+.livestream-selection-container .bot-message-bubble {
+  padding: 12px 12px;
+}
+
+.bot-message-content {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #0a0a0a;
+}
+
+.message-metadata {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rp-border, #e5e7eb);
+}
+
+.confidence-text {
+  font-size: 11px;
+  color: var(--rp-text-secondary, #64748b);
+}
+
+.bot-message-time {
+  font-size: 11px;
+  color: var(--rp-text-secondary, #64748b);
+  margin-top: 4px;
+  margin-left: 4px;
+}
+
+/* ===== 思考指示器样式 ===== */
+.thinking-indicator-wrapper {
+  width: 100%;
+}
+
+.thinking-message {
+  opacity: 0.8;
+}
+
+.thinking-bubble {
+  background: var(--rp-panel, #fcfcfc);
+  border: 1px solid var(--rp-border, #e5e7eb);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.thinking-animation {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.thinking-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rp-brand, #10a37f);
+  animation: thinking-pulse 1.4s ease-in-out infinite;
+}
+
+.thinking-dot.dot-1 {
+  animation-delay: 0s;
+}
+
+.thinking-dot.dot-2 {
+  animation-delay: 0.2s;
+}
+
+.thinking-dot.dot-3 {
+  animation-delay: 0.4s;
+}
+
+.thinking-text {
+  font-size: 14px;
+  color: var(--rp-text-secondary, #64748b);
+  font-style: italic;
+}
+
+@keyframes thinking-pulse {
+  0%, 60%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  30% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* ===== 消息输入区域 ===== */
+.chat-input-container {
+  background: var(--rp-panel, #fcfcfc);
+  border-top: 1px solid var(--rp-border, #e5e7eb);
+  padding: 16px;
+  padding-bottom: 30px;
+}
+
+.chat-input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  background: var(--rp-bg, #f9fafb);
+  border: 1px solid var(--rp-border, #e5e7eb);
+  border-radius: 24px;
+  padding: 8px 12px;
+  transition: border-color 0.2s ease;
+}
+
+/* focus-within not supported in Lynx - removed */
+
+.chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--rp-text, #0f172a);
+  min-height: 20px;
+  max-height: 120px;
+  padding: 6px 0;
+}
+
+.chat-input::placeholder {
+  color: var(--rp-text-secondary, #64748b);
+}
+
+.chat-input.disabled {
+  color: var(--rp-text-secondary, #64748b);
+  cursor: not-allowed;
+}
+
+.send-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.send-button.active {
+  background: var(--rp-brand, #10a37f);
+  transform: scale(1);
+}
+
+.send-button.active:hover {
+  background: var(--rp-brand-hover, #0d8f6b);
+  transform: scale(1.05);
+}
+
+.send-button.active:active {
+  transform: scale(0.95);
+}
+
+.send-button.inactive {
+  background: var(--rp-border, #e5e7eb);
+  cursor: not-allowed;
+}
+
+.send-icon.active {
+  color: #ffffff;
+}
+
+.send-icon.inactive {
+  color: var(--rp-text-secondary, #64748b);
+}
+
+.input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.input-hint {
+  text-align: left;
+}
+
+.hint-text {
+  font-size: 11px;
+  color: var(--rp-text-secondary, #64748b);
+}
+
+.char-count {
+  text-align: right;
+}
+
+.char-count-text {
+  font-size: 11px;
+  color: var(--rp-text-secondary, #64748b);
+}
+
+.char-count-text.over-limit {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.chat-input.over-limit {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 768px) {
+  .chat-messages-scroll {
+    padding: 12px;
+  }
+  
+  .user-message .message-content-wrapper,
+  .bot-message .message-content-wrapper {
+    max-width: 90%;
+  }
+  
+  .bot-message .message-content-wrapper.livestream-selection-container {
+    max-width: 98%;
+  }
+  
+  .chat-input-container {
+    padding: 12px;
+  }
+  
+  .input-hint {
+    display: none;
+  }
+}
+
+/* webkit-scrollbar not supported in Lynx - removed */
+
+/* ===== 动画效果 ===== */
+.message-wrapper {
+  animation: message-appear 0.3s ease-out;
+}
+
+@keyframes message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.thinking-indicator-wrapper {
+  animation: thinking-appear 0.2s ease-out;
+}
+
+@keyframes thinking-appear {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

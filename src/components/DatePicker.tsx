@@ -1,4 +1,4 @@
-import { useState, useEffect } from "@lynx-js/react";
+import { useEffect, useState } from "@lynx-js/react";
 import { Icon } from "./Icon.tsx";
 
 interface DatePickerProps {
@@ -34,7 +34,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         setEndDate(parsedEnd);
         // 设置当前月份为开始日期的月份
         setCurrentMonth(
-          new Date(parsedStart.getFullYear(), parsedStart.getMonth(), 1),
+          new Date(parsedStart.getFullYear(), parsedStart.getMonth(), 1)
         );
       }
     } else if (!value) {
@@ -189,14 +189,14 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     <view className="custom-date-picker">
       <view className="date-picker-trigger">
         <view className="date-picker-main" bindtap={() => setIsOpen(!isOpen)}>
-          <Icon name="calendar" size={16} className="date-picker-icon" />
+          <Icon name="calendar" size={20} className="date-picker-icon" />
           <text className="date-picker-text">
             {value ? `${value}` : "Select Date Range"}
           </text>
         </view>
         {value && (
           <view className="date-picker-clear" bindtap={handleClear}>
-            <Icon name="close" size={14} className="clear-icon" />
+            <Icon name="close" size={20} className="clear-icon" />
           </view>
         )}
       </view>

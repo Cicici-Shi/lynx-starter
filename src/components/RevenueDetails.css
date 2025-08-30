@@ -1,0 +1,327 @@
+/* Copyright 2024 The Lynx Authors. All rights reserved. */
+/* Licensed under the Apache License Version 2.0 that can be found in the */
+/* LICENSE file in the root directory of this source tree. */
+
+/* 收益分配详情组件样式 */
+.revenue-details {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.revenue-details.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 遮罩层 */
+.details-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* 详情面板 */
+.details-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  background: var(--rp-panel, #fcfcfc);
+  border-radius: 16px;
+  box-shadow: var(--rp-shadow, 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04));
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 头部 */
+.details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--rp-border, #e5e7eb);
+  background: var(--rp-bg, #f8f7f6);
+}
+
+.details-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--rp-text, #0f172a);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 关闭按钮 */
+.close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.close-button:hover {
+  background: var(--rp-border, #e5e7eb);
+}
+
+.close-icon {
+  color: var(--rp-muted, #6b7280);
+}
+
+/* 内容区域 */
+.details-content {
+  max-height: calc(80vh - 80px);
+  overflow-y: auto;
+}
+
+/* 基本信息 */
+.basic-info {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--rp-border, #f3f4f6);
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-size: 14px;
+  color: var(--rp-muted, #6b7280);
+  font-weight: 500;
+  min-width: 80px;
+  margin-right: 12px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: var(--rp-text, #0f172a);
+  flex: 1;
+}
+
+.total-amount {
+  font-weight: 600;
+  color: var(--rp-brand, #10b981);
+  font-size: 16px;
+}
+
+.calculation-basis {
+  align-items: flex-start;
+}
+
+.basis-text {
+  line-height: 1.5;
+}
+
+/* 分配详情区域 */
+.distribution-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--rp-border, #f3f4f6);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--rp-text, #0f172a);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.distribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.distribution-item {
+  padding: 16px;
+  background: var(--rp-bg, #f8f7f6);
+  border-radius: 12px;
+  border: 1px solid var(--rp-border, #f3f4f6);
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.party-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.category-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.party-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rp-text, #0f172a);
+}
+
+.party-category {
+  font-size: 12px;
+  color: var(--rp-muted, #6b7280);
+}
+
+.party-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.percentage {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rp-text, #0f172a);
+}
+
+.amount {
+  font-size: 12px;
+  color: var(--rp-muted, #6b7280);
+}
+
+.distribution-reason {
+  font-size: 13px;
+  color: var(--rp-muted, #6b7280);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+/* 百分比可视化条 */
+.percentage-bar {
+  height: 4px;
+  background: var(--rp-border, #e5e7eb);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.percentage-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  animation: barGrow 0.6s ease-out;
+}
+
+@keyframes barGrow {
+  from {
+    width: 0%;
+  }
+}
+
+/* 分配汇总 */
+.distribution-summary {
+  padding: 20px 24px;
+  background: var(--rp-bg, #f8f7f6);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.summary-label {
+  font-size: 12px;
+  color: var(--rp-muted, #6b7280);
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rp-text, #0f172a);
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .details-panel {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .details-header {
+    padding: 16px 20px;
+  }
+
+  .details-title {
+    font-size: 16px;
+  }
+
+  .basic-info,
+  .distribution-section {
+    padding: 16px 20px;
+  }
+
+  .distribution-summary {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .summary-item {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* 动画优化 */
+@media (prefers-reduced-motion: reduce) {
+  .revenue-details,
+  .details-panel,
+  .close-button,
+  .percentage-fill {
+    transition: none;
+    animation: none;
+  }
+}

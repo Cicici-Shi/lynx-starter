@@ -1,18 +1,24 @@
-import '@lynx-js/preact-devtools';
-import '@lynx-js/react/debug';
-import { root, useState } from '@lynx-js/react';
+import "@lynx-js/preact-devtools";
+import "@lynx-js/react/debug";
+import { root, useState } from "@lynx-js/react";
 
-import { App } from './App.js';
-import { ReportsPage } from './pages/ReportsPage.js';
+import { LivestreamChatbotPage } from "./pages/LivestreamChatbotPage.js";
+import { ReportsPage } from "./pages/ReportsPage.js";
 
 function AppRouter() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'reports'>('home');
+  const [currentPage, setCurrentPage] = useState<"chatbot" | "reports">(
+    "chatbot",
+  );
 
-  if (currentPage === 'reports') {
-    return <ReportsPage onBack={() => setCurrentPage('home')} />;
+  if (currentPage === "reports") {
+    return <ReportsPage onBack={() => setCurrentPage("chatbot")} />;
   }
 
-  return <App onNavigateToReports={() => setCurrentPage('reports')} />;
+  return (
+    <LivestreamChatbotPage
+      onNavigateToReports={() => setCurrentPage("reports")}
+    />
+  );
 }
 
 root.render(<AppRouter />);

@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ChatInterface > should match snapshot 1`] = `
+<page>
+  <view
+    class="chat-interface"
+  >
+    <scroll-view
+      class="chat-messages-scroll"
+      react-ref-3-0="1"
+      scroll-bar-enable="true"
+      scroll-orientation="vertical"
+      scroll-to-bottom="true"
+    >
+      <view
+        class="message-list"
+      >
+        MessageList
+      </view>
+    </scroll-view>
+    <wrapper>
+      <view
+        class="chat-input"
+      >
+        ChatInput
+      </view>
+    </wrapper>
+  </view>
+</page>
+`;

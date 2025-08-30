@@ -7,8 +7,8 @@ export interface AISearchResult {
     start: string;
     end: string;
   } | null;
-  status?: 'completed' | 'pending' | 'failed' | null;
-  type?: 'sales' | 'analytics' | 'user' | null;
+  weekend?: 'weekend' | 'weekday' | null;
+  duration?: 'short' | 'medium' | 'long' | null;
 }
 
 // Validation functions
@@ -36,35 +36,40 @@ export function isValidOptionalDateRange(
   return value === undefined || value === null || isValidDateRange(value);
 }
 
-export function isValidStatus(
+export function isValidWeekend(
   value: unknown,
-): value is 'completed' | 'pending' | 'failed' {
-  return value === 'completed' || value === 'pending' || value === 'failed';
+): value is 'weekend' | 'weekday' {
+  return value === 'weekend' || value === 'weekday';
 }
 
-export function isValidOptionalStatus(
+export function isValidOptionalWeekend(
   value: unknown,
-): value is 'completed' | 'pending' | 'failed' | undefined | null {
-  return value === undefined || value === null || isValidStatus(value);
+): value is 'weekend' | 'weekday' | undefined | null {
+  return value === undefined || value === null || isValidWeekend(value);
 }
 
-export function isValidType(
+export function isValidDuration(
   value: unknown,
-): value is 'sales' | 'analytics' | 'user' {
-  return value === 'sales' || value === 'analytics' || value === 'user';
+): value is 'short' | 'medium' | 'long' {
+  return value === 'short' || value === 'medium' || value === 'long';
 }
 
-export function isValidOptionalType(
+export function isValidOptionalDuration(
   value: unknown,
-): value is 'sales' | 'analytics' | 'user' | undefined | null {
-  return value === undefined || value === null || isValidType(value);
+): value is 'short' | 'medium' | 'long' | undefined | null {
+  return value === undefined || value === null || isValidDuration(value);
 }
 
 // Simple helper to handle searchTerms array -> searchTerm string
-function normalizeSearchTerm(searchTerm: unknown, searchTerms: unknown): string | undefined {
+function normalizeSearchTerm(
+  searchTerm: unknown,
+  searchTerms: unknown,
+): string | undefined {
   if (typeof searchTerm === 'string') return searchTerm;
   if (Array.isArray(searchTerms)) {
-    const parts = (searchTerms as unknown[]).filter((x) => typeof x === 'string') as string[];
+    const parts = (searchTerms as unknown[]).filter(
+      (x) => typeof x === 'string',
+    ) as string[];
     const joined = parts.join(' ').trim();
     return joined.length > 0 ? joined : undefined;
   }
@@ -82,10 +87,15 @@ export function validateAISearchResult(data: unknown): AISearchResult {
   const result: AISearchResult = {};
 
   // Handle searchTerm (support searchTerms as array/string for backward compatibility)
-  const normalizedSearchTerm = normalizeSearchTerm(obj.searchTerm, (obj as any).searchTerms);
+  const normalizedSearchTerm = normalizeSearchTerm(
+    obj.searchTerm,
+    (obj as any).searchTerms,
+  );
   if (normalizedSearchTerm !== undefined && normalizedSearchTerm !== null) {
     if (!isValidOptionalString(normalizedSearchTerm)) {
-      throw new Error('Invalid searchTerm: must be a string, null, or undefined');
+      throw new Error(
+        'Invalid searchTerm: must be a string, null, or undefined',
+      );
     }
     result.searchTerm = normalizedSearchTerm;
   }
@@ -100,24 +110,24 @@ export function validateAISearchResult(data: unknown): AISearchResult {
     result.dateRange = obj.dateRange;
   }
 
-  // Validate status (let AI handle normalization)
-  if (obj.status !== undefined) {
-    if (!isValidOptionalStatus(obj.status)) {
+  // Validate weekend (let AI handle normalization)
+  if (obj.weekend !== undefined) {
+    if (!isValidOptionalWeekend(obj.weekend)) {
       throw new Error(
-        "Invalid status: must be 'completed', 'pending', 'failed', or undefined",
+        "Invalid weekend: must be 'weekend', 'weekday', or undefined",
       );
     }
-    result.status = obj.status;
+    result.weekend = obj.weekend;
   }
 
-  // Validate type (let AI handle normalization)
-  if (obj.type !== undefined) {
-    if (!isValidOptionalType(obj.type)) {
+  // Validate duration (let AI handle normalization)
+  if (obj.duration !== undefined) {
+    if (!isValidOptionalDuration(obj.duration)) {
       throw new Error(
-        "Invalid type: must be 'sales', 'analytics', 'user', or undefined",
+        "Invalid duration: must be 'short', 'medium', 'long', or undefined",
       );
     }
-    result.type = obj.type;
+    result.duration = obj.duration;
   }
 
   return result;

@@ -1,0 +1,1223 @@
+/* LivestreamChatbotPage 样式文件 */
+/* 继承 ReportsPage.css 的设计系统和颜色变量 */
+
+/* 聊天机器人特定颜色变量 */
+:root {
+  /* 继承 ReportsPage 的颜色变量 */
+  --chatbot-bg: var(--rp-bg);
+  --chatbot-panel: var(--rp-panel);
+  --chatbot-border: var(--rp-border);
+  --chatbot-text: var(--rp-text);
+  --chatbot-text-2: var(--rp-text-2);
+  --chatbot-muted: var(--rp-muted);
+  --chatbot-brand: var(--rp-brand);
+  --chatbot-brand-600: var(--rp-brand-600);
+  --chatbot-shadow: var(--rp-shadow);
+
+  /* 聊天特定颜色 */
+  --user-message-bg: var(--rp-brand);
+  --user-message-text: #ffffff;
+  --bot-message-bg: var(--rp-panel);
+  --bot-message-text: var(--rp-text);
+  --thinking-color: var(--rp-brand);
+}
+
+/* === 主页面布局 === */
+
+.chatbot-page {
+  height: 100%;
+  flex: 1;
+  background-color: var(--chatbot-bg);
+  color: var(--chatbot-text);
+  display: flex;
+  flex-direction: column;
+}
+
+/* === 顶部导航栏 === */
+
+.chatbot-header {
+  background-color: var(--chatbot-panel);
+  margin-top: 40px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--chatbot-border);
+  box-shadow: var(--chatbot-shadow);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.back-button {
+  font-size: 16px;
+  color: var(--chatbot-brand);
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-button:hover {
+  background-color: #ecfdf5;
+  color: var(--chatbot-brand-600);
+}
+
+.chatbot-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--chatbot-text);
+  flex: 1;
+}
+
+/* === 头部按钮组 === */
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.demo-button {
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: #fef3c7;
+  border: 1px solid #fbbf24;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-button:hover {
+  background-color: #fde68a;
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(251, 191, 36, 0.2);
+}
+
+.demo-button:active {
+  transform: scale(0.98);
+}
+
+.demo-button-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #92400e;
+  white-space: nowrap;
+}
+
+.reports-button {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+}
+
+.reports-button:hover {
+  background-color: #ecfdf5;
+  transform: scale(1.05);
+}
+
+.reports-button-text {
+  font-size: 20px;
+}
+
+/* === 主内容区域 === */
+
+.chatbot-content {
+  flex: 1;
+  /* padding: 24px; */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: hidden;
+}
+
+/* === 加载和错误状态 === */
+
+.loading-container,
+.error-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.loading-icon {
+  color: var(--chatbot-brand);
+  animation: thinking 1.5s ease-in-out infinite;
+}
+
+.loading-text {
+  font-size: 16px;
+  color: var(--chatbot-muted);
+}
+
+.error-icon {
+  color: #ef4444;
+}
+
+.error-message {
+  font-size: 16px;
+  color: var(--chatbot-text-2);
+  text-align: center;
+}
+
+.retry-button {
+  padding: 12px 24px;
+  background-color: var(--chatbot-brand);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retry-button:hover {
+  background-color: var(--chatbot-brand-600);
+}
+
+/* === 区域标题 === */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.section-icon {
+  color: var(--chatbot-brand);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--chatbot-text);
+}
+
+/* === 直播记录区域 === */
+
+.records-section {
+  background-color: var(--chatbot-panel);
+  border-radius: 12px;
+  border: 1px solid var(--chatbot-border);
+  padding: 20px;
+  box-shadow: var(--chatbot-shadow);
+  max-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === 空状态样式 === */
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  color: var(--chatbot-muted);
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--chatbot-text-2);
+}
+
+.empty-description {
+  font-size: 14px;
+  color: var(--chatbot-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.records-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* === 直播记录卡片 === */
+
+.record-item {
+  border-radius: 8px;
+  border: 1px solid var(--chatbot-border);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.record-card {
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--chatbot-panel);
+}
+
+.record-card:hover {
+  background-color: #f8fafc;
+}
+
+.record-card.expanded {
+  background-color: #f0fdf4;
+}
+
+.record-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.record-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.record-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--chatbot-text);
+}
+
+.record-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.record-date,
+.record-duration {
+  font-size: 14px;
+  color: var(--chatbot-muted);
+}
+
+.record-revenue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--chatbot-brand);
+}
+
+.record-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.stats-item {
+  font-size: 12px;
+  color: var(--chatbot-muted);
+}
+
+.record-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-text {
+  font-size: 12px;
+  color: var(--chatbot-text-2);
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.status-completed {
+  background-color: #10b981;
+}
+
+.status-dot.status-live {
+  background-color: #ef4444;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-dot.status-scheduled {
+  background-color: #f59e0b;
+}
+
+.expand-icon {
+  color: var(--chatbot-muted);
+  transition: transform 0.2s ease;
+}
+
+/* === 收益分配详情 === */
+
+.revenue-details {
+  border-top: 1px solid var(--chatbot-border);
+  padding: 20px;
+  background-color: #f8fafc;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.details-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--chatbot-text);
+}
+
+.close-button {
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #e5e7eb;
+}
+
+.close-icon {
+  color: var(--chatbot-muted);
+}
+
+.details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.calculation-basis {
+  padding: 12px;
+  background-color: var(--chatbot-panel);
+  border-radius: 8px;
+  border: 1px solid var(--chatbot-border);
+}
+
+.basis-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--chatbot-text);
+  margin-right: 8px;
+}
+
+.basis-text {
+  font-size: 14px;
+  color: var(--chatbot-text-2);
+}
+
+.distribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.distribution-item {
+  padding: 16px;
+  background-color: var(--chatbot-panel);
+  border-radius: 8px;
+  border: 1px solid var(--chatbot-border);
+}
+
+.distribution-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.party-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--chatbot-text);
+}
+
+.party-amount {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.percentage {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--chatbot-brand);
+  padding: 4px 8px;
+  background-color: rgba(16, 163, 127, 0.1);
+  border-radius: 4px;
+}
+
+.amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--chatbot-text);
+}
+
+.distribution-reason {
+  font-size: 14px;
+  color: var(--chatbot-text-2);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+/* === 收益分配详情增强样式 === */
+
+.calculation-time {
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--chatbot-text-2);
+}
+
+.time-text {
+  font-size: 12px;
+  color: var(--chatbot-muted);
+}
+
+.total-amount {
+  padding: 12px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.total-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--chatbot-text);
+}
+
+.total-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--chatbot-brand);
+}
+
+.party-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.percentage-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #f1f5f9;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.percentage-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.distribution-summary {
+  padding: 12px;
+  background-color: #f8fafc;
+  border: 1px solid var(--chatbot-border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.summary-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--chatbot-text-2);
+}
+
+/* === 聊天区域 === */
+
+.chat-section {
+  flex: 1;
+  background-color: var(--chatbot-panel);
+  border-radius: 12px;
+  border: 1px solid var(--chatbot-border);
+  box-shadow: var(--chatbot-shadow);
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+.messages-scroll {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+/* === 消息气泡 === */
+
+.message-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.message-item.user {
+  justify-content: flex-end;
+}
+
+.message-item.bot {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  max-width: 90%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  position: relative;
+  animation: messageAppear 0.2s ease-out;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-item.user .message-bubble {
+  background-color: var(--user-message-bg);
+  color: var(--user-message-text);
+  border-bottom-right-radius: 4px;
+}
+
+.message-item.bot .message-bubble {
+  background-color: var(--bot-message-bg);
+  color: var(--bot-message-text);
+  border: 1px solid var(--chatbot-border);
+  border-bottom-left-radius: 4px;
+}
+
+.message-content {
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.message-time {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 4px;
+  display: block;
+}
+
+/* === 思考状态指示器 === */
+
+.message-bubble.thinking {
+  background-color: #f8fafc;
+  border: 1px solid var(--chatbot-border);
+}
+
+.thinking-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.thinking-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--thinking-color);
+  animation: thinkingPulse 1.5s ease-in-out infinite;
+}
+
+.thinking-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thinking-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes thinkingPulse {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.thinking-text {
+  font-size: 12px;
+  color: var(--chatbot-muted);
+}
+
+/* === 消息输入框 === */
+
+.chat-input-container {
+  border-top: 1px solid var(--chatbot-border);
+  padding-top: 16px;
+}
+
+.chat-input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background-color: var(--chatbot-panel);
+  border: 1px solid var(--chatbot-border);
+  border-radius: 12px;
+  padding: 8px;
+  transition: all 0.2s ease;
+}
+
+/* focus-within not supported in Lynx - removed */
+
+.chat-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--chatbot-text);
+  background: transparent;
+  min-height: 20px;
+  max-height: 120px;
+  line-height: 1.5;
+}
+
+.chat-input.disabled {
+  color: var(--chatbot-muted);
+  cursor: not-allowed;
+}
+
+.chat-input::placeholder {
+  color: var(--chatbot-muted);
+}
+
+.send-button {
+  padding: 8px;
+  background-color: var(--chatbot-brand);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+}
+
+.send-button:hover:not(.disabled) {
+  background-color: var(--chatbot-brand-600);
+}
+
+.send-button.disabled {
+  background-color: var(--chatbot-muted);
+  cursor: not-allowed;
+}
+
+.send-icon {
+  color: white;
+}
+
+/* webkit-scrollbar not supported in Lynx - removed */
+
+/* === 响应式设计 === */
+
+@media (max-width: 768px) {
+  .chatbot-content {
+    gap: 16px;
+  }
+
+  .records-section {
+    max-height: 250px;
+    padding: 16px;
+  }
+
+  .chat-section {
+    min-height: 350px;
+  }
+
+  .record-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .record-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .message-bubble {
+    max-width: 85%;
+  }
+
+  .distribution-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .party-amount {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .chatbot-header {
+    padding: 12px 16px;
+    margin-top: 20px;
+  }
+
+  .chatbot-title {
+    font-size: 20px;
+  }
+
+  .chatbot-content {
+    gap: 16px;
+  }
+
+  .records-section,
+  .chat-section {
+    border-radius: 8px;
+  }
+
+  .message-bubble {
+    max-width: 95%;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .record-title {
+    font-size: 14px;
+  }
+
+  .record-meta {
+    font-size: 12px;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .distribution-item {
+    padding: 12px;
+  }
+
+  .party-name {
+    font-size: 14px;
+  }
+
+  .percentage {
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+
+  .amount {
+    font-size: 14px;
+  }
+}
+
+/* === 超小屏幕优化 === */
+
+@media (max-width: 360px) {
+  .chatbot-content {
+    padding: 8px;
+  }
+
+  .records-section {
+    max-height: 200px;
+  }
+
+  .chat-section {
+    min-height: 300px;
+  }
+
+  .message-bubble {
+    max-width: 95%;
+    padding: 8px 10px;
+  }
+
+  .record-main {
+    gap: 8px;
+  }
+
+  .record-meta {
+    gap: 8px;
+  }
+}
+
+/* === 横屏模式优化 === */
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .chatbot-header {
+    margin-top: 20px;
+    padding: 12px 20px;
+  }
+
+  .chatbot-content {
+    padding: 16px 24px;
+  }
+
+  .records-section {
+    max-height: 200px;
+  }
+
+  .chat-section {
+    min-height: 250px;
+  }
+}
+
+/* === 大屏幕优化 === */
+
+@media (min-width: 1200px) {
+  .chatbot-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+
+
+  .message-bubble {
+    max-width: 60%;
+  }
+}
+
+/* === 动画效果 === */
+
+@keyframes thinking {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* === 页面加载动画 === */
+
+.chatbot-page {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.records-section {
+  animation: slideInFromLeft 0.4s ease-out;
+}
+
+.chat-section {
+  animation: slideInFromRight 0.4s ease-out 0.1s both;
+}
+
+/* === 消息动画增强 === */
+
+.message-item.user {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+.message-item.bot {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+/* === 悬停效果增强 === */
+
+.record-card {
+  transform: translateY(0);
+  transition: all 0.2s ease;
+}
+
+.record-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.send-button {
+  transform: scale(1);
+  transition: all 0.2s ease;
+}
+
+.send-button:hover:not(.disabled) {
+  transform: scale(1.05);
+}
+
+.send-button:active:not(.disabled) {
+  transform: scale(0.95);
+}
+
+/* === 可访问性增强 === */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === 高对比度模式支持 === */
+
+@media (prefers-contrast: high) {
+  :root {
+    --chatbot-border: #000000;
+    --chatbot-text: #000000;
+    --chatbot-bg: #ffffff;
+    --chatbot-brand: #0066cc;
+    --user-message-bg: #0066cc;
+    --bot-message-bg: #ffffff;
+  }
+  
+  .message-bubble,
+  .record-card,
+  .distribution-item {
+    border-width: 2px;
+  }
+}
+
+/* === 深色模式支持（预留） === */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chatbot-bg: #0f172a;
+    --chatbot-panel: #1e293b;
+    --chatbot-border: #334155;
+    --chatbot-text: #f1f5f9;
+    --chatbot-text-2: #cbd5e1;
+    --chatbot-muted: #64748b;
+    --chatbot-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    --user-message-bg: #10a37f;
+    --bot-message-bg: #1e293b;
+    --bot-message-text: #f1f5f9;
+  }
+}
+
+/* focus-visible not supported in Lynx - removed */
+
+/* focus-within not supported in Lynx - removed */
+
+/* === 额外的视觉增强 === */
+
+.record-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.record-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--chatbot-brand), var(--chatbot-brand-600));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.record-card:hover::before,
+.record-card.expanded::before {
+  transform: scaleX(1);
+}
+
+/* === 加载状态增强 === */
+
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* === 工具类 === */
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-wrap {
+  word-break: break-word;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === 打印样式 === */
+
+@media print {
+  .chatbot-page {
+    background: white;
+    color: black;
+  }
+  
+  .back-button,
+  .send-button,
+  .close-button,
+  .retry-button {
+    display: none;
+  }
+  
+  .chat-input-container {
+    display: none;
+  }
+  
+  .message-bubble {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+}

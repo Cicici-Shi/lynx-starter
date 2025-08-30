@@ -14,3 +14,7 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Hot Module Replacement files
+*.hot-update.js
+*.hot-update.js.map
