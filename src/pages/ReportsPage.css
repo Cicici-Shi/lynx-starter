@@ -297,16 +297,27 @@
   background-color: var(--rp-panel);
   border: 1px solid var(--rp-border);
   border-radius: 8px;
-  cursor: pointer;
-  gap: 12px;
   transition: all 0.2s ease;
   height: 40px;
   box-sizing: border-box;
+  gap: 8px;
+}
+
+.date-picker-main {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+  gap: 12px;
 }
 
 .date-picker-trigger:hover {
   border-color: var(--rp-brand);
   box-shadow: 0 0 0 4px rgba(16, 163, 127, 0.12);
+}
+
+.date-picker-main:hover {
+  /* 主要区域的悬停效果由父元素处理 */
 }
 
 .date-picker-icon {
@@ -318,6 +329,28 @@
   color: var(--rp-text-2);
   font-size: 14px;
   font-weight: 500;
+}
+
+.date-picker-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--rp-muted-bg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.date-picker-clear:hover {
+  opacity: 1;
+  background-color: var(--rp-danger-bg);
+}
+
+.date-picker-clear .clear-icon {
+  opacity: 0.8;
 }
 
 .date-picker-dropdown {

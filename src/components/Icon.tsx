@@ -20,6 +20,7 @@ const iconMap = {
   dropup:
     "https://img.icons8.com/material-rounded/24/000000/collapse-arrow.png",
   calendar: "https://img.icons8.com/material-rounded/24/000000/calendar.png",
+  close: "https://img.icons8.com/material-rounded/24/000000/delete-sign.png",
   ai: "https://img.icons8.com/material-rounded/24/000000/sparkles.png",
   thinking: "https://img.icons8.com/material-rounded/24/000000/loading.png",
 };

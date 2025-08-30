@@ -4,6 +4,7 @@ import {
   type AISearchResponse,
 } from "../services/aiService.ts";
 import { Icon } from "../components/Icon.tsx";
+import { DatePicker } from "../components/DatePicker.tsx";
 import "./ReportsPage.css";
 
 // 扩展 Lynx 类型定义以支持 input 元素
@@ -39,7 +40,6 @@ function SmartSearchBox({
   const [isOpen, setIsOpen] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [savedInputValue, setSavedInputValue] = useState("");
 
   // 获取类型对应的图标
   const getTypeIcon = (type: string) => {
@@ -104,7 +104,7 @@ function SmartSearchBox({
         (item) =>
           item.title.toLowerCase().includes(query) ||
           getTypeText(item.type).toLowerCase().includes(query) ||
-          getStatusText(item.status).toLowerCase().includes(query)
+          getStatusText(item.status).toLowerCase().includes(query),
       )
       .map((item) => ({
         id: item.id,
@@ -123,8 +123,7 @@ function SmartSearchBox({
 
   const handleOptionSelect = async (optionId: string, optionLabel?: string) => {
     if (optionId === "ai") {
-      // 保存用户输入，然后开始思考状态
-      setSavedInputValue(inputValue);
+      // 开始思考状态
       setIsThinking(true);
       setIsOpen(false);
 
@@ -132,7 +131,7 @@ function SmartSearchBox({
 
       try {
         // 确保至少显示 1 秒的思考状态
-        const [aiResult] = await Promise.all([
+        await Promise.all([
           onAISearch(inputValue),
           new Promise((resolve) => setTimeout(resolve, 1000)),
         ]);
@@ -323,174 +322,6 @@ function Dropdown({
   );
 }
 
-// 日期选择器组件
-function DatePicker({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [startDate, setStartDate] = useState<number | null>(null);
-  const [endDate, setEndDate] = useState<number | null>(null);
-
-  // 生成2025年8月的日历数据
-  const generateCalendar = () => {
-    const year = 2025;
-    const month = 8; // 8月
-
-    // 获取当月第一天是星期几 (0=周日, 1=周一, ...)
-    const firstDay = new Date(year, month - 1, 1).getDay();
-    // 获取当月总天数
-    const daysInMonth = new Date(year, month, 0).getDate();
-    // 获取上个月的天数
-    const prevMonthDays = new Date(year, month - 1, 0).getDate();
-
-    const calendar = [];
-
-    // 添加上个月的日期（灰色显示）
-    for (let i = firstDay - 1; i >= 0; i--) {
-      calendar.push({
-        day: prevMonthDays - i,
-        isCurrentMonth: false,
-        isNextMonth: false,
-      });
-    }
-
-    // 添加当月的日期
-    for (let day = 1; day <= daysInMonth; day++) {
-      calendar.push({
-        day,
-        isCurrentMonth: true,
-        isNextMonth: false,
-      });
-    }
-
-    // 添加下个月的日期（灰色显示）
-    const remainingCells = 42 - calendar.length; // 6行 x 7列 = 42个格子
-    for (let day = 1; day <= remainingCells; day++) {
-      calendar.push({
-        day,
-        isCurrentMonth: false,
-        isNextMonth: true,
-      });
-    }
-
-    return calendar;
-  };
-
-  const handleDateSelect = (day: number, isCurrentMonth: boolean) => {
-    if (!isCurrentMonth) return;
-
-    if (!startDate || (startDate && endDate)) {
-      // 开始新的选择
-      setStartDate(day);
-      setEndDate(null);
-    } else if (startDate && !endDate) {
-      // 选择结束日期
-      if (day >= startDate) {
-        setEndDate(day);
-        const rangeStr = `2025-08-${startDate.toString().padStart(2, "0")} ~ 2025-08-${day.toString().padStart(2, "0")}`;
-        onChange(rangeStr);
-        setIsOpen(false);
-      } else {
-        // 如果选择的日期小于开始日期，重新开始
-        setStartDate(day);
-        setEndDate(null);
-      }
-    }
-  };
-
-  const handleClickOutside = () => {
-    setIsOpen(false);
-  };
-
-  const isDateInRange = (day: number) => {
-    if (!startDate) return false;
-    if (!endDate) return day === startDate;
-    return day >= startDate && day <= endDate;
-  };
-
-  const isDateRangeStart = (day: number) => {
-    return startDate === day;
-  };
-
-  const isDateRangeEnd = (day: number) => {
-    return endDate === day;
-  };
-
-  const calendar = generateCalendar();
-  const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
-
-  return (
-    <view className="custom-date-picker">
-      <view className="date-picker-trigger" bindtap={() => setIsOpen(!isOpen)}>
-        <Icon name="calendar" size={16} className="date-picker-icon" />
-        <text className="date-picker-text">
-          {value ? `${value}` : "Select Date Range"}
-        </text>
-      </view>
-
-      {isOpen && (
-        <>
-          {/* 点击遮罩关闭日期选择器 */}
-          <view
-            className="date-picker-overlay"
-            bindtap={handleClickOutside}
-          ></view>
-          <view className="date-picker-dropdown">
-            {/* 月份导航 */}
-            <view className="calendar-header">
-              <text className="nav-arrow">‹</text>
-              <text className="current-month">August 2025</text>
-              <text className="nav-arrow">›</text>
-            </view>
-
-            {/* 星期标题 */}
-            <view className="weekdays">
-              {weekDays.map((day) => (
-                <text key={day} className="weekday">
-                  {day}
-                </text>
-              ))}
-            </view>
-
-            {/* 日期网格 */}
-            <view className="calendar-grid">
-              {calendar.map((date, index) => (
-                <text
-                  key={`${date.isCurrentMonth ? "current" : date.isNextMonth ? "next" : "prev"}-${date.day}-${index}`}
-                  className={`calendar-day ${
-                    !date.isCurrentMonth ? "other-month" : ""
-                  } ${
-                    date.isCurrentMonth && isDateInRange(date.day)
-                      ? "in-range"
-                      : ""
-                  } ${
-                    date.isCurrentMonth && isDateRangeStart(date.day)
-                      ? "range-start"
-                      : ""
-                  } ${
-                    date.isCurrentMonth && isDateRangeEnd(date.day)
-                      ? "range-end"
-                      : ""
-                  }`}
-                  bindtap={() =>
-                    handleDateSelect(date.day, date.isCurrentMonth)
-                  }
-                >
-                  {date.day}
-                </text>
-              ))}
-            </view>
-          </view>
-        </>
-      )}
-    </view>
-  );
-}
-
 interface ReportItem {
   id: string;
   title: string;
@@ -619,7 +450,7 @@ export function ReportsPage(props: { onBack?: () => void }) {
         aiResult.dateRange.end
       ) {
         setDateFilter(
-          `${aiResult.dateRange.start} ~ ${aiResult.dateRange.end}`
+          `${aiResult.dateRange.start} ~ ${aiResult.dateRange.end}`,
         );
       } else {
         setDateFilter("");
@@ -630,7 +461,7 @@ export function ReportsPage(props: { onBack?: () => void }) {
     }
   };
 
-  const rawFiltered = mockData.filter((item) => {
+  const filteredData = mockData.filter((item) => {
     const matchesSearch = item.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -780,7 +611,7 @@ export function ReportsPage(props: { onBack?: () => void }) {
                 </view>
 
                 <view className="table-body">
-                  {filteredData.map((item) => (
+                  {filteredData.map((item: ReportItem) => (
                     <view key={item.id} className="table-row">
                       <text className="table-cell">{item.title}</text>
                       <text className="table-cell">{item.date}</text>
