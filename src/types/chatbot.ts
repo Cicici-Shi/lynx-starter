@@ -92,6 +92,7 @@ export interface ChatMessage {
     totalSegments?: number; // 总段落数
     streamStartTime?: Date; // 流式开始时间
     streamEndTime?: Date; // 流式结束时间
+    llmResponse?: any; // LLM响应数据
   };
 }
 

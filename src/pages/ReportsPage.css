@@ -53,7 +53,7 @@
 }
 
 .back-button:hover {
-  background-color: #ecfdf5;
+  background-color: #eff6ff;
   color: var(--rp-brand-600);
 }
 
@@ -80,7 +80,7 @@
 }
 
 .search-input-wrapper.thinking {
-  background: linear-gradient(90deg, #e0e7ff 0%, #dbeafe 25%, #d1fae5 50%, #a7f3d0 75%, #86efac 100%);
+  background: linear-gradient(90deg, #e0e7ff 0%, #dbeafe 25%, #bfdbfe 50%, #93c5fd 75%, #60a5fa 100%);
   background-size: 200% 100%;
   animation: thinking-gradient 3s ease-in-out infinite;
   border-color: #3b82f6;
@@ -187,7 +187,7 @@
 }
 
 .search-option.selected {
-  background-color: #f0fdf4;
+  background-color: #eff6ff;
 }
 
 .search-option-content {
@@ -276,14 +276,14 @@
 .filters-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .filter-label {
@@ -495,6 +495,7 @@
 .custom-dropdown {
   position: relative;
   min-width: 150px;
+  max-width: 300px;
 }
 
 .dropdown-trigger {
@@ -514,7 +515,7 @@
 
 .dropdown-trigger:hover {
   border-color: var(--rp-brand);
-  box-shadow: 0 0 0 4px rgba(16, 163, 127, 0.12);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
 }
 
 .dropdown-trigger-content {
@@ -571,12 +572,12 @@
 }
 
 .dropdown-item.selected {
-  background-color: #f0fdf4;
+  background-color: #eff6ff;
   color: var(--rp-brand-600);
 }
 
 .dropdown-item.selected:hover {
-  background-color: #ecfdf5;
+  background-color: #dbeafe;
 }
 
 .dropdown-item-content {
@@ -608,7 +609,7 @@
 
 /* 状态语义色 - 状态点颜色 */
 .status-dot.status-success {
-  background-color: #10b981 !important;
+  background-color: #3b82f6 !important;
 }
 
 .status-dot.status-warning {
@@ -645,7 +646,7 @@
 
 .filter-button:hover {
   border-color: var(--rp-brand);
-  background-color: #f0fdf4;
+  background-color: #eff6ff;
 }
 
 /* 表格样式 */
@@ -751,7 +752,7 @@
 
 /* 状态语义色 - 圆点颜色 */
 .status-success .status-dot {
-  background-color: #10b981;
+  background-color: #3b82f6;
 }
 .status-warning .status-dot {
   background-color: #f59e0b;
@@ -844,10 +845,10 @@
   /* 筛选项宽屏布局 */
   .filters-container {
     flex-direction: row;
-    gap: 24px;
+    gap: 28px;
     align-items: flex-end;
     flex-wrap: wrap;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
 
   .filter-group {
@@ -874,6 +875,7 @@
   /* 下拉选择器宽屏优化 */
   .custom-dropdown {
     min-width: 200px;
+    max-width: 350px;
   }
 
   .dropdown-trigger {
@@ -1029,12 +1031,12 @@
   }
 
   .filters-container {
-    gap: 32px;
+    gap: 36px;
   }
 
   .filter-group {
     min-width: 250px;
-    max-width: 350px;
+    max-width: 400px;
   }
 
   .table-container {
@@ -1116,12 +1118,12 @@
   }
 
   .filters-container {
-    gap: 40px;
+    gap: 44px;
   }
 
   .filter-group {
     min-width: 300px;
-    max-width: 400px;
+    max-width: 450px;
   }
 
   .table-container {

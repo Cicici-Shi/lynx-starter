@@ -21,6 +21,232 @@ import "../components/LivestreamSelectionMessage.css";
 import "../components/StreamingBotMessage.css";
 import "../components/TypewriterBotMessage.css";
 
+// LLM响应接口定义
+interface LLMResponse {
+  live_history_result?: any;
+  reward_result?: any;
+  analysis_text: string;
+}
+
+// 工具调用函数 - 实现正确的pipeline
+const callLLMWithTool = async (): Promise<LLMResponse> => {
+  try {
+    console.log("开始执行直播分析pipeline...");
+
+    // 第一步：调用 get-live-history 接口
+    console.log("步骤1: 调用 get-live-history 接口");
+    let liveHistoryData = null;
+    try {
+      const liveHistoryResponse = await fetch(
+        "http://localhost:8000/get-live-history"
+      );
+      if (liveHistoryResponse.ok) {
+        liveHistoryData = await liveHistoryResponse.json();
+        console.log("get-live-history 数据:", liveHistoryData);
+      } else {
+        throw new Error(
+          `get-live-history 接口调用失败: ${liveHistoryResponse.status}`
+        );
+      }
+    } catch (error) {
+      console.error("调用 get-live-history 接口失败:", error);
+      throw error; // 直接抛出错误，不继续下一步
+    }
+
+    // 第二步：调用 get-reward-result 接口（依赖第一步的数据）
+    console.log("步骤2: 调用 get-reward-result 接口");
+    let rewardData = null;
+    try {
+      const rewardResponse = await fetch(
+        "http://localhost:8000/get-reward-result/"
+      );
+      if (rewardResponse.ok) {
+        rewardData = await rewardResponse.json();
+        console.log("get-reward-result 数据:", rewardData);
+      } else {
+        throw new Error(
+          `get-reward-result 接口调用失败: ${rewardResponse.status}`
+        );
+      }
+    } catch (error) {
+      console.error("调用 get-reward-result 接口失败:", error);
+      throw error; // 直接抛出错误，不继续下一步
+    }
+
+    // 第三步：用LLM分析获取到的数据
+    console.log("步骤3: 用LLM分析数据");
+    const prompt = `Please analyze the following livestream data and reward data to generate user-friendly natural language analysis:
+
+Livestream History Data:
+${liveHistoryData ? JSON.stringify(liveHistoryData, null, 2) : "No data available"}
+
+Reward Result Data:
+${rewardData ? JSON.stringify(rewardData, null, 2) : "No data available"}
+
+Please generate a JSON response with the following fields:
+{
+  "live_history_result": ${liveHistoryData ? JSON.stringify(liveHistoryData) : "null"},
+  "reward_result": ${rewardData ? JSON.stringify(rewardData) : "null"},
+  "analysis_text": "Detailed analysis text based on the above data, including: 1. Livestream performance analysis 2. Reward distribution analysis 3. Improvement suggestions"
+}
+
+Requirements:
+1. Analysis text should be detailed, professional, and easy to understand
+2. Comprehensive analysis combining livestream data and reward data
+3. Provide specific improvement suggestions
+4. Maintain correct JSON format`;
+
+    // 调用AI服务进行分析
+    const response = await chatbotAIService.answerQuestion(prompt);
+
+    // 尝试解析JSON响应
+    try {
+      const jsonResponse = JSON.parse(response);
+      return jsonResponse as LLMResponse;
+    } catch (parseError) {
+      console.error("LLM响应解析失败:", parseError);
+      // 如果解析失败，返回默认响应
+      return {
+        live_history_result: liveHistoryData,
+        reward_result: rewardData,
+        analysis_text:
+          response || "Analysis completed, but response format is abnormal",
+      };
+    }
+  } catch (error) {
+    console.error("LLM调用失败:", error);
+    // 返回错误响应
+    return {
+      analysis_text: `Error: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+    };
+  }
+};
+
+// 测试函数 - 用于验证LLM调用功能
+const testLLMCall = async () => {
+  console.log("开始测试LLM调用...");
+  try {
+    const result = await callLLMWithTool();
+    console.log("LLM调用结果:", result);
+    return result;
+  } catch (error) {
+    console.error("LLM调用测试失败:", error);
+    return null;
+  }
+};
+
+// 直播记录选择的LLM调用函数 - 实现正确的pipeline
+const callLLMForRecordSelection = async (
+  record: LivestreamRecord,
+  distribution: RevenueDistribution
+): Promise<LLMResponse> => {
+  try {
+    console.log(`开始分析直播记录: ${record.title}`);
+
+    // 第一步：调用 get-live-history 接口
+    console.log("步骤1: 调用 get-live-history 接口");
+    let liveHistoryData = null;
+    try {
+      const liveHistoryResponse = await fetch(
+        "http://localhost:8000/get-live-history"
+      );
+      if (liveHistoryResponse.ok) {
+        liveHistoryData = await liveHistoryResponse.json();
+        console.log("get-live-history 数据:", liveHistoryData);
+      } else {
+        throw new Error(
+          `get-live-history 接口调用失败: ${liveHistoryResponse.status}`
+        );
+      }
+    } catch (error) {
+      console.error("调用 get-live-history 接口失败:", error);
+      throw error; // 直接抛出错误，不继续下一步
+    }
+
+    // 第二步：调用 get-reward-result 接口（依赖第一步的数据）
+    console.log("步骤2: 调用 get-reward-result 接口");
+    let rewardData = null;
+    try {
+      const rewardResponse = await fetch(
+        "http://localhost:8000/get-reward-result/"
+      );
+      if (rewardResponse.ok) {
+        rewardData = await rewardResponse.json();
+        console.log("get-reward-result 数据:", rewardData);
+      } else {
+        throw new Error(
+          `get-reward-result 接口调用失败: ${rewardResponse.status}`
+        );
+      }
+    } catch (error) {
+      console.error("调用 get-reward-result 接口失败:", error);
+      throw error; // 直接抛出错误，不继续下一步
+    }
+
+    // 第三步：用LLM分析获取到的数据，结合本地记录信息
+    console.log("步骤3: 用LLM分析数据");
+    const prompt = `Please analyze the following data to generate user-friendly natural language analysis:
+
+Livestream Record Information:
+- Title: ${record.title}
+- Date: ${record.date}
+- Duration: ${record.duration}
+- Total Revenue: ${record.totalRevenue} CNY
+- Viewer Count: ${record.viewerCount || "Unknown"} people
+- Peak Viewers: ${record.peakViewers || "Unknown"} people
+
+Local Revenue Distribution Information:
+- Total Amount: ${distribution.totalAmount} ${distribution.currency}
+- Calculation Basis: ${distribution.calculationBasis}
+- Distribution Details:
+${distribution.distributions.map((item) => `  - ${item.party}: ${item.percentage}% (${item.amount} ${distribution.currency}) - ${item.reason}`).join("\n")}
+
+API Retrieved Livestream History Data:
+${liveHistoryData ? JSON.stringify(liveHistoryData, null, 2) : "No data available"}
+
+API Retrieved Reward Result Data:
+${rewardData ? JSON.stringify(rewardData, null, 2) : "No data available"}
+
+Please generate a JSON response with the following fields:
+{
+  "live_history_result": ${liveHistoryData ? JSON.stringify(liveHistoryData) : "null"},
+  "reward_result": ${rewardData ? JSON.stringify(rewardData) : "null"},
+  "analysis_text": "Detailed analysis text based on all the above data, including: 1. Livestream performance analysis 2. Revenue distribution analysis 3. Reward mechanism analysis 4. Improvement suggestions"
+}
+
+Requirements:
+1. Analysis text should be detailed, professional, and easy to understand
+2. Comprehensive analysis combining local record data and API data
+3. Compare local distribution plan with API reward results
+4. Provide specific improvement suggestions
+5. Maintain correct JSON format`;
+
+    // 调用AI服务进行分析
+    const response = await chatbotAIService.answerQuestion(prompt);
+
+    // 尝试解析JSON响应
+    try {
+      const jsonResponse = JSON.parse(response);
+      return jsonResponse as LLMResponse;
+    } catch (parseError) {
+      console.error("LLM响应解析失败:", parseError);
+      // 如果解析失败，返回默认响应
+      return {
+        live_history_result: liveHistoryData,
+        reward_result: rewardData,
+        analysis_text:
+          response || "Analysis completed, but response format is abnormal",
+      };
+    }
+  } catch (error) {
+    console.error("LLM调用失败:", error);
+    // 返回错误响应
+    return {
+      analysis_text: `Error: ${error instanceof Error ? error.message : "Unknown error occurred"}`,
+    };
+  }
+};
+
 /**
  * Live Revenue Distribution Chatbot Main Page Component
  *
@@ -58,6 +284,8 @@ export function LivestreamChatbotPage({
 
   useEffect(() => {
     initializeData();
+    // 测试LLM调用功能
+    testLLMCall();
   }, []);
 
   /**
@@ -174,16 +402,13 @@ export function LivestreamChatbotPage({
         );
       }
 
-      // Generate AI analysis response
-      const analysisResponse = await chatbotAIService.explainRevenue(
-        record.id,
-        distribution
-      );
+      // 调用LLM生成结构化JSON响应（内部已处理工具调用）
+      const llmResponse = await callLLMForRecordSelection(record, distribution);
 
       const botAnalysisMessage: ChatMessage = {
         id: `bot-analysis-${Date.now()}`,
         type: "bot",
-        content: analysisResponse,
+        content: llmResponse.analysis_text || "分析完成",
         timestamp: new Date(),
         relatedRecordId: record.id,
         metadata: {
@@ -192,6 +417,7 @@ export function LivestreamChatbotPage({
             `Livestream Record-${record.id}`,
             "Revenue Distribution Data",
           ],
+          llmResponse: llmResponse, // 保存完整的LLM响应
         },
       };
 
@@ -283,28 +509,13 @@ export function LivestreamChatbotPage({
     // Wait for a short time to simulate thinking
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const fixedResponse = `As a TikTok revenue distribution expert, based on the provided data, I recommend creators adopt a **65%** revenue split ratio. Here's the detailed analysis:
-
-**Core Basis:**
-1. **Content Quality & Engagement Match**: Overall score of 0.69 and engagement rate of 0.12 show content has appeal but room for improvement. The 65% ratio acknowledges current performance while incentivizing creators to optimize engagement strategies.
-
-2. **Fan Base & Stream Duration**: 50k followers and 120-minute stream duration indicate the creator has reached a certain scale, but stability score of 0.37 and retention rate of 0.58 suggest content consistency needs strengthening. The 65% ratio ensures revenue while encouraging content stability improvement.
-
-3. **Growth Potential**: Peak audience of 14,574 and average audience of 12,515 show stream appeal, but comment count of 23,523 and like count of 29,275 indicate interaction depth could be explored further. The 65% ratio balances current revenue with future growth space.
-
-**Why Choose 65%:**
-- **Incentive Optimization**: Higher than platform default ratio (usually 50-70%), encouraging creators to improve engagement and retention rates.
-- **Risk Control**: Avoids excessive ratios that could impact creator motivation due to revenue volatility.
-- **Growth-Oriented**: Provides higher returns on current foundation, promoting dual enhancement of content quality and fan loyalty.
-
-This ratio recognizes the creator's current performance while reserving space for future growth, making it a reasonable choice that balances short-term revenue with long-term development. Creators are advised to focus on improving retention rates and interaction depth to further increase revenue ratios.
-
-(Note: Actual revenue ratios may be affected by TikTok platform policies, advertising split rules, and creator levels. Please refer to the platform's latest rules.)`;
+    // 调用LLM生成结构化JSON响应（内部已处理工具调用）
+    const llmResponse = await callLLMWithTool();
 
     const typewriterMessage: ChatMessage = {
       id: `typewriter-bot-${Date.now()}`,
       type: "typewriter-bot",
-      content: fixedResponse,
+      content: llmResponse.analysis_text || "分析完成",
       timestamp: new Date(),
       metadata: {
         confidence: 0.92,
@@ -313,6 +524,7 @@ This ratio recognizes the creator's current performance while reserving space fo
           "Revenue Distribution Algorithm",
           "Creator Performance Assessment",
         ],
+        llmResponse: llmResponse, // 保存完整的LLM响应
       },
     };
 
